@@ -21,7 +21,7 @@ button, select, textarea { font: inherit; color: inherit; }
 .mono { font-family: var(--mono); font-weight: 500; }
 
 /* panel */
-.panel { position: relative; min-height: 100vh; min-height: 100svh; overflow: hidden; color: var(--ink); }
+.panel { position: relative; height: min(100svh, 960px); min-height: 640px; overflow: hidden; color: var(--ink); }
 .layers { position: absolute; inset: 0; z-index: 0; }
 .l { position: absolute; inset: -4%; opacity: 0; transition: opacity .77s ease; transform: scale(1.08); animation: drift 18s ease-in-out infinite alternate; }
 .l0 { background: radial-gradient(60% 55% at 86% 76%, rgba(246,222,104,.95), transparent 70%), radial-gradient(45% 40% at 32% 105%, rgba(246,222,104,.5), transparent 70%), linear-gradient(#F2ECDF, #F4EBC6); }
@@ -206,7 +206,8 @@ pre { background: #fff; border: 1px solid var(--line); padding: 12px 14px; borde
   .row { position: relative; padding: 28px 20px 0; flex-direction: column; align-items: flex-start; gap: 18px; }
   .cta { height: 48px; font-size: 16px; padding: 0 20px; }
   .caption { font-size: 16px; } .caption br { display: none; }
-  .panel { min-height: 0; padding-bottom: 0; }
+  .panel { height: auto; min-height: 0; padding-bottom: 0; overflow: visible; }
+  .caption { display: block; }
   .strip { position: relative; height: auto; margin-top: 40px; padding: 0 0 8px; }
   .notch { position: static; height: 40px; }
   .scroll-hint { display: none; }
