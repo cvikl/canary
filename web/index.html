@@ -21,6 +21,7 @@
       <span>Canary Cage <em>for MCP</em></span>
     </a>
     <nav class="topnav" aria-label="Page">
+      <a href="#problem">Problem</a>
       <a href="#record">Record</a>
       <a href="#how">How it works</a>
       <a href="#team">Team</a>
@@ -67,6 +68,48 @@
         <li data-stage="compiling"><b>Enforce</b><span>compiled profile</span></li>
         <li data-stage="replaying"><b>Replay</b><span>run C, same probe</span></li>
       </ol>
+    </div>
+  </section>
+
+  <section class="problem" id="problem">
+    <div class="wrap">
+      <div class="problem-grid">
+        <div>
+          <div class="sec-head">
+            <h2>The problem</h2>
+            <p class="sub">Agents get their tools through MCP servers. A tool's schema tells the agent what arguments to send. It says nothing about what the implementation does to the machine it runs on. A tool can return a correct answer and, on the way, read a .env file, copy an SSH key and send both somewhere.</p>
+          </div>
+          <p class="problem-text">The people who feel this are the platform, developer-experience and application-security teams who approve MCP servers for coding assistants. Today their decision is binary and poorly evidenced. Trust the server or reject it.</p>
+          <p class="problem-text">The canary in the mine did one job. It showed, before anyone was hurt, that something in the air was wrong. Canary Cage plants canaries a tool should never touch, watches from outside the cage, and shows exactly what the tool reached for.</p>
+        </div>
+        <figure class="photo">
+          <img src="img/canary.jpg" alt="A domestic canary on a perch" loading="lazy" width="1600" height="1067">
+          <figcaption>Domestic canary. Photo Yavor Uzunov, Wikimedia Commons, CC0.</figcaption>
+        </figure>
+      </div>
+      <div class="charts">
+        <figure class="bars">
+          <figcaption><b>Developers using or planning to use AI tools</b><span>Share of respondents, Stack Overflow Developer Survey, axis from 60 percent</span></figcaption>
+          <svg viewBox="0 0 520 220" role="img" aria-label="Bar chart, 70 percent in 2023, 76 percent in 2024, 84 percent in 2025">
+            <line class="axis" x1="60" y1="180" x2="500" y2="180"/>
+            <text x="54" y="184" text-anchor="end">60</text><text x="54" y="104" text-anchor="end">75</text><text x="54" y="24" text-anchor="end">90</text>
+            <rect class="bar" x="110" y="126.7" width="80" height="53.3" rx="3"/><text class="val" x="150" y="116" text-anchor="middle">70 percent</text><text x="150" y="204" text-anchor="middle">2023</text>
+            <rect class="bar" x="240" y="94.7" width="80" height="85.3" rx="3"/><text class="val" x="280" y="84" text-anchor="middle">76 percent</text><text x="280" y="204" text-anchor="middle">2024</text>
+            <rect class="bar accent" x="370" y="52" width="80" height="128" rx="3"/><text class="val" x="410" y="42" text-anchor="middle">84 percent</text><text x="410" y="204" text-anchor="middle">2025</text>
+          </svg>
+          <p class="source">Source. <a href="https://survey.stackoverflow.co/2025/ai" rel="noopener">Stack Overflow Developer Survey 2023 to 2025</a>.</p>
+        </figure>
+        <figure class="bars">
+          <figcaption><b>Supply-chain campaigns against coding agents, per year</b><span>Campaigns tracked, delivered through MCP servers, rules files and READMEs with hidden instructions</span></figcaption>
+          <svg viewBox="0 0 520 220" role="img" aria-label="Bar chart, 6 campaigns in 2024, 14 in 2025">
+            <line class="axis" x1="60" y1="180" x2="500" y2="180"/>
+            <text x="54" y="184" text-anchor="end">0</text><text x="54" y="104" text-anchor="end">8</text><text x="54" y="24" text-anchor="end">16</text>
+            <rect class="bar" x="150" y="122.5" width="100" height="57.5" rx="3"/><text class="val" x="200" y="112" text-anchor="middle">6</text><text x="200" y="204" text-anchor="middle">2024</text>
+            <rect class="bar accent" x="310" y="45.8" width="100" height="134.2" rx="3"/><text class="val" x="360" y="36" text-anchor="middle">14</text><text x="360" y="204" text-anchor="middle">2025</text>
+          </svg>
+          <p class="source">Source. <a href="https://phoenix.security/accelerating-supply-chain-attacks-npm-pypi-vsx-ai-enabled-2026/" rel="noopener">Phoenix Security supply-chain tracker, June 2026</a>. 14 of 59 campaigns since 2025 were delivered through agent tooling.</p>
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -169,7 +212,13 @@
         <img src="img/architecture.png" alt="Diagram of the nine steps split between the host on the Vultr VM and the fresh sandbox used for each run" loading="lazy" width="1200" height="688">
         <figcaption>The nine steps, split between the host on the Vultr VM, which holds all authority, and the fresh sandbox used for each run.</figcaption>
       </figure>
-      <p class="vultr">One Vultr Cloud Compute VM runs the orchestrator, every sandbox, the gateway and this page. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
+      <div class="vultr-grid">
+        <figure class="photo">
+          <img src="img/datacenter.jpg" alt="Rows of server racks in a data centre" loading="lazy" width="1600" height="1067">
+          <figcaption>Server racks. Photo Carl Lender, Wikimedia Commons, CC BY 2.0. Illustrative, not Vultr's facility.</figcaption>
+        </figure>
+        <p class="vultr">One Vultr Cloud Compute VM in Amsterdam runs the orchestrator, every sandbox, the recording gateway and this page. The sandboxes never see the inference key, the Docker socket or a host path. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
+      </div>
     </div>
   </section>
 
