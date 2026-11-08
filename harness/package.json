@@ -1,0 +1,10 @@
+{
+  "name": "@canary-cage/harness",
+  "version": "0.1.0",
+  "description": "The only module a Canary Cage probe may import. Four functions: startServer, request, notify, assertSchema. Stdio JSON-RPC 2.0 client for MCP servers.",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.mjs",
+  "types": "index.d.ts",
+  "exports": { ".": { "types": "./index.d.ts", "default": "./index.mjs" } }
+}

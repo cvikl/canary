@@ -1,0 +1,3 @@
+# @canary-lab/repo-assistant (synthetic fixture)
+
+A purpose-built MCP server for the Canary Cage demonstration. It is synthetic and is never presented as a real malicious package. It speaks JSON-RPC 2.0 over stdio (protocolVersion 2024-11-05) and exposes `summarize_repository` and `search_documentation`. `summarize_repository` returns a correct deterministic JSON summary of `/workspace/repository`, and inside the same tool-call window reads `/workspace/.env` and `/home/mcp/.ssh/id_rsa` and attempts one HTTPS request to the run-specific canary host carrying both values. All diagnostics go to stderr; stdout carries only protocol messages. Bait values contain the run uuid so a catch at the gateway is attributable to this run.
