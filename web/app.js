@@ -100,7 +100,38 @@ function renderPanels() {
   const lc = run.runs?.C?.lifecycle || run.runs?.B?.lifecycle;
   if (lc) $("lifecycleLine").textContent = "Containers. " + lc.map((l) => l.slice(24)).join("; ");
 }
-function render() { if (!run) return; setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); renderStats(); }
+function renderTimeline() {
+  const lanes = ["B", "C"].map((k) => ({ k, r: run?.runs?.[k] })).filter((l) => l.r && l.r.strace_events?.length);
+  if (!lanes.length) { $("timeline").hidden = true; return; }
+  $("timeline").hidden = false;
+  const W = 1200, left = 150, right = 20, laneH = 72, top = 26;
+  const H = top + lanes.length * laneH + 34;
+  const spans = lanes.map(({ r }) => { const t0 = Math.min(...r.strace_events.map((e) => e.t)); const t1 = Math.max(...r.strace_events.map((e) => e.t), r.window.resultAt || 0); return { t0, t1 }; });
+  const maxSpan = Math.max(...spans.map((s) => s.t1 - s.t0), 1);
+  const x = (ms) => left + (ms / maxSpan) * (W - left - right);
+  const rows = [];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Syscall timeline per run">`;
+  const step = maxSpan > 4000 ? 1000 : maxSpan > 1500 ? 500 : maxSpan > 600 ? 200 : 100;
+  for (let ms = 0; ms <= maxSpan; ms += step) svg += `<line class="axis" x1="${x(ms)}" y1="${top - 6}" x2="${x(ms)}" y2="${H - 30}"/><text x="${x(ms)}" y="${H - 12}" text-anchor="middle">${ms} ms</text>`;
+  lanes.forEach(({ k, r }, i) => {
+    const { t0 } = spans[i]; const y = top + i * laneH; const base = y + 50;
+    const name = k === "B" ? "Run B, discovery" : "Run C, enforced replay";
+    svg += `<text class="lane-label" x="0" y="${y + 30}">${name}</text><text x="0" y="${y + 46}">${r.strace_events.length} events</text>`;
+    if (r.window.callSentAt) { const a = x(r.window.callSentAt - t0), b = x((r.window.resultAt || r.window.callSentAt + 1) - t0); svg += `<rect class="band" x="${a}" y="${y + 4}" width="${Math.max(b - a, 2)}" height="${laneH - 10}"/><text class="band-label" x="${a + 4}" y="${y + 14}">tool-call window, ${Math.round(b >= a ? ((r.window.resultAt || 0) - r.window.callSentAt) : 0)} ms</text>`; }
+    svg += `<line class="axis" x1="${left}" y1="${base}" x2="${W - right}" y2="${base}"/>`;
+    for (const e of r.strace_events) {
+      if (e.kind === "clone" || e.kind === "other") continue;
+      const plat = e.platform, hollow = !!e.errno && !plat && e.errno !== "EINPROGRESS";
+      const h = plat ? 10 : 26; const xx = x(e.t - t0);
+      svg += `<rect class="ev${plat ? " plat" : ""}${hollow ? " hollow" : ""}" x="${(xx - 1.5).toFixed(1)}" y="${base - h}" width="3" height="${h}" rx="1"><title>${esc(e.syscall)} ${esc(e.target || "")}${e.errno ? " " + esc(e.errno) : ""} at +${e.t - t0} ms, ${esc(e.label || "")}</title></rect>`;
+      if (!plat) rows.push(`<tr><td>${esc(name)}</td><td>+${e.t - t0}</td><td>${esc(e.syscall)}</td><td>${esc(e.target || "")}</td><td>${esc(e.errno || "")}</td><td>${esc(e.label || "")}</td></tr>`);
+    }
+  });
+  svg += "</svg>";
+  $("timelineSvg").innerHTML = svg;
+  $("timelineTable").innerHTML = `<table><tr><th>run</th><th>ms</th><th>syscall</th><th>target</th><th>result</th><th>label</th></tr>${rows.join("")}</table>`;
+}
+function render() { if (!run) return; setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); renderStats(); renderTimeline(); }
 
 async function refresh() { if (!run || cached) return; run = await api(`/api/runs/${run.id}`); render(); }
 function subscribe(id) {

@@ -23,6 +23,7 @@
     <nav class="topnav" aria-label="Page">
       <a href="#record">Record</a>
       <a href="#how">How it works</a>
+      <a href="#team">Team</a>
       <a href="#limits">Limits</a>
       <a href="https://github.com/cvikl/canary" rel="noopener">GitHub</a>
     </nav>
@@ -98,6 +99,12 @@
         <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
       </dl>
       <p class="stats-note" id="statsNote"></p>
+      <figure class="chart" id="timeline" hidden data-shot="timeline">
+        <figcaption><b>Syscalls over time, host-side strace.</b> One lane per run. The band is the tool-call window, from the request leaving the probe to the result arriving. Tall marks are reads, connects and execs outside the platform; short grey marks are runtime noise; hollow marks were refused by the kernel. Hover a mark for the syscall.</figcaption>
+        <div id="timelineSvg" class="chart-svg"></div>
+        <p class="chart-legend"><span class="lg tall"></span>tool-attributed event <span class="lg short"></span>platform noise <span class="lg hollow"></span>refused by the kernel <span class="lg band"></span>tool-call window</p>
+        <details class="chart-table"><summary>Table view</summary><div id="timelineTable"></div></details>
+      </figure>
     </div>
   </section>
 
@@ -158,7 +165,25 @@
         <li><b>Replay, run C</b>Identical probe by hash, identical fixture. The real OS error is recorded. Output compared field by field.</li>
         <li><b>Explain and bundle</b>The model writes prose beside the verdict and cannot change a label.</li>
       </ol>
+      <figure class="figure">
+        <img src="img/architecture.png" alt="Diagram of the nine steps split between the host on the Vultr VM and the fresh sandbox used for each run" loading="lazy" width="1200" height="688">
+        <figcaption>The nine steps, split between the host on the Vultr VM, which holds all authority, and the fresh sandbox used for each run.</figcaption>
+      </figure>
       <p class="vultr">One Vultr Cloud Compute VM runs the orchestrator, every sandbox, the gateway and this page. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
+    </div>
+  </section>
+
+  <section class="team" id="team">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Who built it</h2>
+        <p class="sub">Vanta Point Labs, Cambridge. Built on 8 November 2026 for Vultr Agent Rush.</p>
+      </div>
+      <div class="people">
+        <div class="person"><img src="img/timotej.jpg" alt="Portrait of Timotej Cvikl" loading="lazy" width="210" height="262"><b>Timotej Cvikl</b><span>Co-founder, product and engineering. Co-founded his first software company at nineteen. Winner, Luminance challenge, Hack the Law 2026.</span></div>
+        <div class="person"><img src="img/bernard.jpg" alt="Portrait of Bernard Liu" loading="lazy" width="210" height="262"><b>Bernard Liu</b><span>Co-founder, legal and regulatory lead. PhD researcher, University of Cambridge. First place overall, Hack the Law 2026. IP practice in Hong Kong.</span></div>
+        <div class="person person-text"><b>Jeremy Sosabowski</b><span>Advisor. Fixture and threat model review.</span></div>
+      </div>
     </div>
   </section>
 
