@@ -20,7 +20,7 @@ A deterministic compiler turns the contract into an enforced Docker profile. Run
 Every model call ran on Vultr Serverless Inference and is listed with model, latency and tokens. The footer shows the Vultr region and instance. Each run got a fresh container, destroyed on every exit path. The evidence bundle holds the probe, the transcripts, the labelled syscalls, the gateway log and the hashes.
 
 8. Team
-Built by Vanta Point Labs. Timotej Cvikl, who co-founded his first software company at nineteen, and Bernard Liu, a PhD researcher at the University of Cambridge with a background in IP practice. Jeremy Sosabowski advises. We say observed, never safe.
+Built by Vanta Point Labs. Timotej Cvikl, who co-founded his first software company at nineteen, and Bernard Liu, a PhD researcher at the University of Cambridge with a background in IP practice. Jeremy Wong, offensive security, advises. We say observed, never safe.
 
 9. End
 Before an agent gets a tool, prove the tool can do its job with no more authority than it needs. Canary Cage for MCP, on Vultr.

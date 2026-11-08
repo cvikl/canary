@@ -248,6 +248,5 @@ pre { background: var(--wash); color: var(--ink); border: 1px solid var(--rule);
 .person img { width: 160px; height: 200px; object-fit: cover; display: block; border-radius: 3px; margin-bottom: 16px; filter: grayscale(1); }
 .person b { display: block; font: 600 20px/1.2 var(--display); margin-bottom: 6px; }
 .person span { display: block; color: var(--ink-2); font-size: 15px; line-height: 1.5; }
-.person-text { padding-top: 216px; }
 @media (max-width: 1000px) { .people { grid-template-columns: 1fr 1fr; } .person-text { padding-top: 0; } }
 @media (max-width: 640px) { .people { grid-template-columns: 1fr; gap: 28px; } .person-text { padding-top: 0; } }

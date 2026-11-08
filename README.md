@@ -2,7 +2,7 @@
 
 Canary Cage is an agent that writes and runs behavioural probes against MCP tools inside isolated Vultr sandboxes, discovers what each tool actually touches, and replays the identical probe under a human-approved least-privilege contract to prove the tool still works with less authority.
 
-Built by Vanta Point Labs for Vultr Agent Rush, Challenge 1, Blast Radius Zero. Team: Timotej Cvikl, Bernard Liu, Jeremy Sosabowski (advisor). MIT licence.
+Built by Vanta Point Labs for Vultr Agent Rush, Challenge 1, Blast Radius Zero. Team: Timotej Cvikl, Bernard Liu, Jeremy Wong (advisor). MIT licence.
 
 Live demo: https://canary.vantapointlabs.com (Vultr Cloud Compute VM, Amsterdam, IP 95.179.177.22). Video and slides are linked from the lablab submission.
 
