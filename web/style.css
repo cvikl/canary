@@ -10,6 +10,7 @@
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scrollbar-color: var(--ink-3) var(--bg); }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--green-bg); color: var(--ink); }
