@@ -26,7 +26,7 @@ function badges() {
 function renderHero() {
   if (!run?.hero?.length) { $("hero").hidden = true; return; }
   $("hero").hidden = false;
-  $("heroBody").innerHTML = run.hero.map((r) => `<tr class="${esc(r.state)}"><td>${esc(r.discovery)}</td><td>${esc(r.replay)}</td></tr>`).join("");
+  $("heroBody").innerHTML = run.hero.map((r) => `<tr class="${esc(r.state)}${/observed|attempted|exceeded/.test(r.discovery) && !/not observed/.test(r.discovery) ? " observed" : ""}"><td>${esc(r.discovery)}</td><td>${esc(r.replay)}</td></tr>`).join("");
   $("explanation").innerHTML = run.explanation ? `${esc(run.explanation.text)} <span class="badge${run.explanation.label === "FIXTURE" ? " warn" : ""}">explanation: ${esc(run.explanation.label)}</span>` : "";
 }
 function renderIdentity() {
@@ -60,9 +60,25 @@ function tabs(container, items, render) {
   const show = (k) => { container.innerHTML = `<div class="tabs">${keys.map((x) => `<button class="${x === k ? "on" : ""}" data-k="${x}">${esc(x)}</button>`).join("")}</div>` + render(items[k], k); container.querySelectorAll(".tabs button").forEach((b) => b.onclick = () => show(b.dataset.k)); };
   show(keys[keys.length - 1]);
 }
+function renderStats() {
+  const set = (id, v, cls) => { const el = $(id); el.textContent = v; el.className = cls || ""; };
+  const src = run && (run.runs?.B || run.status === "complete") ? run : null;
+  if (!src) { $("statsNote").textContent = meta?.cached_available ? "Numbers come from the run above once it exists, or from the last recorded run (press Show the last recorded run)." : "Numbers appear from the run above."; return; }
+  const B = src.runs?.B, C = src.runs?.C;
+  const first = src.runs?.inspect?.started_at ? new Date(src.runs.inspect.started_at).getTime() : null;
+  const last = C?.ended_at ? new Date(C.ended_at).getTime() : B?.ended_at ? new Date(B.ended_at).getTime() : null;
+  set("statSyscalls", B ? String(B.strace_events.length) : "—", B && !B.tracer.attached ? "red" : "");
+  set("statGateway", B ? String((B.gateway_log || []).filter((e) => e.kind !== "ready").length) : "—", B && B.gateway_log?.length ? "red" : "");
+  set("statCalls", String(src.inference_ledger?.length || 0));
+  set("statSeconds", first && last ? String(Math.round((last - first) / 1000)) : "—");
+  set("statContainers", String(Object.values(src.runs || {}).filter(Boolean).length));
+  const denied = (src.denied_errors || []).filter((d) => d.errno).length;
+  set("statDenied", C ? String(denied) : "—", C && denied ? "green" : "");
+  $("statsNote").textContent = `${cached ? "From the last recorded run" : "From this run"}, id ${src.id.slice(0, 8)}, ${src.probe.label === "FIXTURE" ? "FIXTURE probe" : "live model " + (src.inference_ledger?.[0]?.model || "")}, tracer ${B?.tracer?.attached ? "attached" : "not attached"}.`;
+}
 function renderPanels() {
-  if (!run) { $("panels").hidden = true; return; }
-  $("panels").hidden = false;
+  if (!run) { $("panels").hidden = true; $("panelsEmpty").hidden = false; return; }
+  $("panels").hidden = false; $("panelsEmpty").hidden = true;
   $("probePanel").innerHTML = (run.probe.attempts || []).map((a) => `<p class="muted" data-shot="probeMeta${a.n}">Attempt ${a.n}, model ${esc(a.model)}, validator: ${a.validation.ok ? `<span class="tag">accepted, hash ${esc(a.validation.hash.slice(0, 16))}…</span>` : a.validation.violations.map((v) => `<span class="tag err">${esc(v)}</span>`).join("")}${a.runtimeError ? ` runtime: <span class="tag err">${esc(a.runtimeError.slice(0, 200))}</span>` : ""}</p>${pre(a.source)}`).join("") + (run.probe.baseline_source ? `<p class="muted">Run A baseline, derived deterministically by removing the tools/call:</p>${pre(run.probe.baseline_source)}` : "") || '<p class="muted">not written yet</p>';
   const runs = Object.fromEntries(Object.entries(run.runs || {}).filter(([, r]) => r));
   tabs($("mcpPanel"), runs, (r) => `<p class="muted">profile ${esc(r.profile)}, container ${esc(r.container_id.slice(0, 12))}, exit ${r.exit_code}${r.timed_out ? ", killed on wall clock" : ""}, window ${r.window.callSentAt ? `${r.window.callSentAt} to ${r.window.resultAt}` : "none"}</p>` + pre(r.mcp_transcript.map((m) => `${new Date(m.t).toISOString().slice(11, 23)} ${m.dir} ${JSON.stringify(m.msg)}`).join("\n")) + `<p class="muted">server stderr (untrusted, from inside the sandbox)</p>` + pre(r.server_stderr.join("")));
@@ -80,7 +96,7 @@ function renderPanels() {
   const lc = run.runs?.C?.lifecycle || run.runs?.B?.lifecycle;
   if (lc) $("lifecycleLine").textContent = "Containers. " + lc.map((l) => l.slice(24)).join("; ");
 }
-function render() { if (!run) return; setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); }
+function render() { if (!run) return; setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); renderStats(); }
 
 async function refresh() { if (!run || cached) return; run = await api(`/api/runs/${run.id}`); render(); }
 function subscribe(id) {
@@ -112,17 +128,18 @@ $("approve").onclick = async () => {
   catch (e) { $("contractError").textContent = e.message; }
   $("approve").disabled = false;
 };
-$("showCached").onclick = async () => { run = await api("/api/cached"); cached = true; $("status").textContent = "Showing a pre-recorded run from cache. Labelled cached everywhere."; render(); };
+$("showCached").onclick = async () => { run = await api("/api/cached"); cached = true; $("status").textContent = "Showing the last recorded run from cache. Labelled cached everywhere."; render(); };
 $("tool").onchange = () => { $("task").textContent = $("tool").value === "search_documentation" ? "Task. Search the documentation of /workspace/repository for a phrase with the chosen tool and check the result has content." : "Task. Summarise the repository at /workspace/repository as JSON with the chosen tool and check the result has content. Curated scenario, nothing arbitrary from the public."; };
 
 (async () => {
   try { meta = await api("/api/meta"); } catch { meta = null; }
   if (meta) {
-    $("vmLine").textContent = meta.vm ? `Backend is a Vultr Cloud Compute VM, region ${meta.vm.region}, instance ${meta.vm.instance_id} (${meta.vm.label}). Inference endpoint ${meta.inference_endpoint}, model ${meta.model}. Budget left today ${meta.budget_remaining} of ${meta.daily_budget} calls.` : `Vultr metadata not reachable from this host (development machine). Inference endpoint ${meta.inference_endpoint}, model ${meta.model}.`;
+    $("vmLine").textContent = meta.vm ? `Served from a Vultr Cloud Compute VM, region ${meta.vm.region}, instance ${meta.vm.instance_id}, read from the Vultr metadata service. Inference endpoint ${meta.inference_endpoint}, model ${meta.model}. Budget left today ${meta.budget_remaining} of ${meta.daily_budget} calls.` : `Vultr metadata not reachable from this host (development machine). Inference endpoint ${meta.inference_endpoint}, model ${meta.model}.`;
     if (meta.cached_available) $("showCached").hidden = false;
     if (!meta.docker) $("status").textContent = "Sandbox host unhealthy. A cached run is available if one was recorded.";
   }
-  badges();
+  badges(); renderStats();
   const id = new URLSearchParams(location.search).get("run");
+  if (!id && meta?.cached_available) { try { const c = await api("/api/cached"); const keep = run; run = c; cached = true; renderStats(); run = keep; cached = false; } catch {} }
   if (id) { try { run = await api(`/api/runs/${id}`); render(); if (!["complete", "failed"].includes(run.status)) { $("run").disabled = true; subscribe(id); } } catch {} }
 })();
