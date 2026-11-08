@@ -148,6 +148,10 @@
           </dl>
         </div>
       </div>
+      <figure class="figure console-shot">
+        <img src="img/vultr-console.png" alt="The canary-cage instance in the Vultr console, Amsterdam, 95.179.177.22, 2 vCPUs, 4096 MB, Ubuntu 24.04" loading="lazy" width="1620" height="640">
+        <figcaption>The VM in the Vultr console, 8 November 2026. Amsterdam, 95.179.177.22, 2 vCPUs, 4 GB, Ubuntu 24.04 LTS.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -254,13 +258,7 @@
         <img src="img/architecture.png" alt="Diagram of the nine steps split between the host on the Vultr VM and the fresh sandbox used for each run" loading="lazy" width="1200" height="688">
         <figcaption>The nine steps, split between the host on the Vultr VM, which holds all authority, and the fresh sandbox used for each run.</figcaption>
       </figure>
-      <div class="vultr-grid">
-        <figure class="photo">
-          <img src="img/datacenter.jpg" alt="Rows of server racks in a data centre" loading="lazy" width="1600" height="1067">
-          <figcaption>Server racks. Photo Carl Lender, Wikimedia Commons, CC BY 2.0. Illustrative, not Vultr's facility.</figcaption>
-        </figure>
-        <p class="vultr">One Vultr Cloud Compute VM in Amsterdam runs the orchestrator, every sandbox, the recording gateway and this page. The sandboxes never see the inference key, the Docker socket or a host path. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
-      </div>
+      <p class="vultr">One Vultr Cloud Compute VM in Amsterdam runs the orchestrator, every sandbox, the recording gateway and this page. The sandboxes never see the inference key, the Docker socket or a host path. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
     </div>
   </section>
 
