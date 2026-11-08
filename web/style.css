@@ -222,3 +222,10 @@ pre { background: #fff; border: 1px solid var(--line); padding: 12px 14px; borde
   .hero-table th + th, .hero-table td + td { padding-left: 14px; } .hero-table td { font-size: 15px; } .hero-table td:first-child { padding-right: 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .l { animation: none; transition: none; } .word, .word.in, .word.leave { transition: none; } .btn.nudge, #approve.nudge { animation: none; } }
+
+.vtiles { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 0 0 48px; }
+.vtile { border-top: 1.4px solid var(--ink); padding-top: 18px; }
+.vtile-k { font: 500 13px var(--mono); color: var(--ink-56); margin-bottom: 10px; }
+.vtile-v { font-size: clamp(26px, 3vw, 38px); font-weight: 500; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 10px; }
+.vtile-s { color: var(--ink-56); font-weight: 400; font-size: 16px; line-height: 1.5; }
+@media (max-width: 760px) { .vtiles { grid-template-columns: 1fr; gap: 24px; } }

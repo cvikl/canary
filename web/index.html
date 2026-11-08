@@ -22,6 +22,7 @@
     <a class="brand" href="/"><span class="dot"></span>canary cage</a>
     <nav class="links">
       <a href="#record">Record</a>
+      <a href="#vultr">Vultr</a>
       <a href="#how">How</a>
       <a href="canary-cage-demo.mp4">Film</a>
       <a href="slides.pdf">Slides</a>
@@ -126,9 +127,13 @@
         <li><b>Discover</b>The probe runs in a fresh container whose only exit is our recording gateway. Host-side strace records what the tool touched. Planted canaries show the overreach.</li>
         <li><b>Replay</b>The model proposes a contract, a person approves, a compiler enforces it. The identical probe runs again. Same answer, credential reads refused by the kernel, no network.</li>
       </ol>
+      <div class="vtiles" id="vultr">
+        <div class="vtile"><div class="vtile-k">Live on Vultr Cloud Compute</div><div class="vtile-v" id="vmRegion">region pending</div><p class="vtile-s"><span id="vmInstance" class="mono">instance pending</span>. Orchestrator, every sandbox, the gateway and this page run on this VM.</p></div>
+        <div class="vtile"><div class="vtile-k">Model calls on Vultr Serverless Inference</div><div class="vtile-v" id="infModel">model pending</div><p class="vtile-s"><span id="infCalls" class="mono">calls pending</span> in the run shown. No other provider anywhere in the code path.</p></div>
+      </div>
       <figure class="photo">
         <img src="img/vm-terminal.png" alt="SSH session on the Vultr VM: Ubuntu 24.04.5 LTS, IPv4 95.179.177.22, prompt root@canary-cage" loading="lazy" width="1300" height="730">
-        <figcaption>Everything runs on one Vultr Cloud Compute VM, Amsterdam, <span id="vmInstance" class="mono">instance pending</span>. Every model call goes to Vultr Serverless Inference, <span id="infModel" class="mono">model pending</span>.</figcaption>
+        <figcaption>SSH into the VM, 8 November 2026. Ubuntu 24.04.5 LTS, 95.179.177.22, root@canary-cage.</figcaption>
       </figure>
     </div>
   </section>
@@ -148,7 +153,7 @@
 <footer class="foot" data-shot="footer"><div class="wrap">
   <p>We say observed, never safe. Results hold for one recorded run; processes are observed and compared, not prevented. The fixture is synthetic and labelled. MIT licence.</p>
   <p id="vmLine" hidden></p><p id="lifecycleLine" hidden></p>
-  <span id="vmRegion" hidden></span><span id="vmHost" hidden></span><span id="infEndpoint" hidden></span><span id="infCalls" hidden></span><span id="infBudget" hidden></span>
+  <span id="vmHost" hidden></span><span id="infEndpoint" hidden></span><span id="infBudget" hidden></span>
 </div></footer>
 <script src="app.js"></script>
 </body>
