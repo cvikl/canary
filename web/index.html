@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canary Cage for MCP</title>
+<meta name="description" content="An agent that writes and runs behavioural probes against MCP tools inside isolated Vultr sandboxes, discovers what each tool actually touches, and replays the identical probe under a human-approved least-privilege contract.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <p class="kicker">Vanta Point Labs, Vultr Agent Rush, Challenge 1, Blast Radius Zero</p>
+    <h1>Canary Cage for MCP</h1>
+    <p class="lede">An agent that writes and runs behavioural probes against MCP tools inside isolated Vultr sandboxes, discovers what each tool actually touches, and replays the identical probe under a human-approved least-privilege contract to prove the tool still works with less authority.</p>
+    <ol class="stages" id="stages">
+      <li data-stage="inspecting">Inspect</li><li data-stage="probing">Probe</li><li data-stage="baseline">Baseline</li><li data-stage="discovering">Discover</li><li data-stage="awaiting_approval">Contract</li><li data-stage="compiling">Enforce</li><li data-stage="replaying">Replay</li>
+    </ol>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="controls card" id="controls">
+    <div class="row">
+      <label>Scenario <select id="scenario"><option value="repo-assistant">@canary-lab/repo-assistant (synthetic fixture)</option></select></label>
+      <label>Tool <select id="tool"><option value="summarize_repository">summarize_repository</option><option value="search_documentation">search_documentation</option></select></label>
+      <button id="run" class="primary">Run the loop</button>
+      <button id="showCached" class="ghost" hidden>Show cached run</button>
+    </div>
+    <p class="task" id="task">Task. Summarise the repository at /workspace/repository as JSON with the chosen tool and check the result has content. Curated scenario, nothing arbitrary from the public.</p>
+    <p class="status" id="status">Idle. One sandbox run at a time. If someone else is running you will see your queue position.</p>
+    <div class="badges" id="badges"></div>
+  </section>
+
+  <section class="card" id="identity" hidden>
+    <details>
+      <summary><span id="identityLabel" class="label">Replay identity</span></summary>
+      <table class="kv" id="hashes"></table>
+    </details>
+    <p class="contract-hash" id="contractHash"></p>
+  </section>
+
+  <section class="card hero" id="hero" hidden>
+    <table class="hero-table">
+      <thead><tr><th>Discovery (Run B)</th><th>Enforced replay (Run C)</th></tr></thead>
+      <tbody id="heroBody"></tbody>
+    </table>
+    <p class="explanation" id="explanation"></p>
+  </section>
+
+  <section class="card" id="contractCard" hidden>
+    <h2>Capability contract</h2>
+    <p class="muted">Proposed by Vultr Serverless Inference from the declared job and the observed matrix. Edit if you wish, then approve. Nothing runs under the contract until a person clicks.</p>
+    <div class="two">
+      <div><h3>Observed during the tool-call window</h3><table class="matrix" id="matrixWindow"></table></div>
+      <div><h3>Contract (JSON, closed schema)</h3><textarea id="contractText" rows="14" spellcheck="false"></textarea><p class="error" id="contractError"></p><button id="approve" class="primary">Approve contract and replay</button></div>
+    </div>
+  </section>
+
+  <section class="panels" id="panels" hidden>
+    <details class="card"><summary>Probe written by the model</summary><div id="probePanel"></div></details>
+    <details class="card"><summary>MCP messages</summary><div id="mcpPanel"></div></details>
+    <details class="card"><summary>Labelled strace events</summary><div id="stracePanel"></div></details>
+    <details class="card"><summary>Compiled Docker profile</summary><div id="profilePanel"></div></details>
+    <details class="card"><summary>Vultr inference log</summary><div id="ledgerPanel"></div></details>
+    <details class="card"><summary>Output comparison and denied paths</summary><div id="comparePanel"></div></details>
+    <details class="card"><summary>Evidence bundle</summary><div id="bundlePanel"></div></details>
+  </section>
+
+  <section class="card limits">
+    <h2>What this shows and what it does not</h2>
+    <p>Canary Cage reports what the host observed for one recorded run: which files, processes and hosts the tool touched during startup and during one isolated tool call, whether an action fell outside the approved contract, whether a run-specific canary was contacted, and whether the locked probe still produced a useful result after enforcement. It does not claim that a tool is safe for every input or environment, that every obfuscated or kernel-level action can be decoded, or that output equivalence can always be decided. Evidence coverage is strace, gateway and DNS, with gaps listed. Executed processes are observed and compared, not prevented. The probe validator restricts what a probe may say. It is not a security boundary. Docker is.</p>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p id="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
+  <p id="lifecycleLine">Containers. Each run gets a fresh container that is destroyed on every exit path.</p>
+  <p>Every model call goes to Vultr Serverless Inference and is listed in the inference log. Team: Timotej Cvikl, Bernard Liu, Jeremy Sosabowski (advisor). MIT licence.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
