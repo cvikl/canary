@@ -1,26 +1,26 @@
-1. Title
-An MCP tool returns the right answer while reading a credential file. The schema never said it could. Canary Cage is an agent that writes behavioural probes, runs them in isolated sandboxes on Vultr, and proves a tool still works with less authority.
+1. Problem
+Agents get their tools through MCP servers. A tool's schema tells the agent what arguments to send and what comes back. It says nothing about what the code does to the machine it runs on. A tool can return the right answer and, on the way, read a dot env file, copy an SSH key, and send both somewhere.
 
-2. Pick
-The reviewer picks a tool. Here it is a repository assistant, a synthetic MCP server we built for the demonstration, and its summarize repository tool. One click starts the loop. Everything runs on one Vultr Cloud Compute VM.
+2. Who
+The people who feel this are the platform and security teams who approve MCP servers for coding assistants. Today their decision is binary. Trust the server, or reject it. No evidence either way.
 
-3. Probe
-Vultr Serverless Inference writes the probe. A short program against a four function harness: start the server, initialise, list tools, call the tool once, check the result. Our validator parses the syntax tree, checks the lifecycle and the literal arguments against the live schema, and freezes the hash. The model writes. Code decides.
+3. Idea
+Canary Cage is a concept for a third option. Plant canaries a tool should never touch. Let an agent write a probe and run it in an isolated cage on Vultr. Watch from outside the cage. Then replay the identical probe under a contract a person approved, and prove the tool still does its job with less authority.
 
-4. Discover
-Run A is the probe minus its tool call, the baseline. Run B is the full probe on a private network whose only exit is our recording gateway. Host side strace watches both from outside the container. The summary comes back correct. In the same window the host also saw the tool read the planted env file, read the SSH key, and post both to a run specific canary host. Our gateway caught the request with the bait in the body. Each event is labelled newly observed during the tool call window.
+4. Probe
+Step one, the agent writes the probe. Vultr Serverless Inference reads the live tool list and writes a short program against a four function harness. Start the server, initialise, list tools, call the tool once, check the result. Our validator parses the syntax tree and accepts or rejects. The accepted probe is hashed and frozen.
 
-5. Contract
-Vultr Serverless Inference proposes the narrowest contract that fits the declared job and the observed matrix. Read the repository, write nothing but output, deny the env file and the SSH directory, no network. A person reads it and approves. Nothing is enforced until that click.
+5. Runs
+Step two, three runs in fresh containers. Run A is the probe without the tool call, the baseline. Run B is the full probe on a private network whose only exit is our recording gateway. Host side strace watches both from outside the container, so nothing inside can tamper with the evidence.
 
-6. Replay
-A deterministic compiler turns the contract into an enforced Docker profile. Run C replays the identical probe by hash against the identical fixture. The summary comes back the same, field by field. The credential reads are refused by the operating system with E ACCES. There is no network to attempt. Same tool, same input, less authority.
+6. Terminal
+This is a real run on the Vultr VM. The summary comes back correct. In the same window the host sees the tool read the planted env file, read the SSH key, and post both to a canary host. Our gateway catches the request with the bait in the body.
 
-7. Evidence
-Every model call ran on Vultr Serverless Inference and is listed with model, latency and tokens. The footer shows the Vultr region and instance. Each run got a fresh container, destroyed on every exit path. The evidence bundle holds the probe, the transcripts, the labelled syscalls, the gateway log and the hashes.
+7. Contract
+Step three, the contract. The model proposes the narrowest capability contract that fits the job and the observed matrix. A person approves it. A deterministic compiler turns it into an enforced Docker profile. Run C replays the identical probe by hash. Same summary. Credential reads refused by the operating system. No network to attempt.
 
-8. Team
-Built by Vanta Point Labs. Timotej Cvikl, who co-founded his first software company at nineteen, and Bernard Liu, a PhD researcher at the University of Cambridge with a background in IP practice. Jeremy Wong, offensive security, advises. We say observed, never safe.
+8. Solution
+What the team gets is a repeatable approval workflow. A capability contract per tool, proof by replay, and an evidence bundle to file. The same loop can gate a registry or run in continuous integration on every new version. Everything ran on one Vultr Cloud Compute VM, with every model call on Vultr Serverless Inference.
 
-9. End
-Before an agent gets a tool, prove the tool can do its job with no more authority than it needs. Canary Cage for MCP, on Vultr.
+9. Team
+Built by Vanta Point Labs. Timotej Cvikl, Bernard Liu, and Jeremy Wong advising on offensive security. We say observed, never safe. Before an agent gets a tool, prove the tool can do its job with no more authority than it needs.
