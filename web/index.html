@@ -58,7 +58,6 @@
 <main>
   <section class="record" id="record">
     <div class="wrap">
-      <p class="step-k">01</p>
       <h2>Run it</h2>
       <p class="sub">Pick the tool, press run. The agent writes the probe, the sandbox runs it, the host watches. About 15 seconds, then it asks you to approve a contract.</p>
       <form class="console" id="controls" data-shot="controls" onsubmit="return false">
@@ -76,9 +75,12 @@
       <ol class="rail" id="stages" data-shot="stages" aria-label="Stages">
         <li data-stage="inspecting"><b>Inspect</b></li><li data-stage="probing"><b>Probe</b></li><li data-stage="baseline"><b>Baseline</b></li><li data-stage="discovering"><b>Discover</b></li><li data-stage="awaiting_approval"><b>Contract</b></li><li data-stage="compiling"><b>Enforce</b></li><li data-stage="replaying"><b>Replay</b></li>
       </ol>
+    </div>
+  </section>
 
-      <p class="step-k">02</p>
-      <h2 class="h2-tight">What the tool did, and what the cage allowed</h2>
+  <section class="result" id="result">
+    <div class="wrap">
+      <h2>What the tool did, and what the cage allowed</h2>
       <p class="sub">Left, discovery. Right, the same probe under the approved contract. Red is what the tool reached for outside its job. Green is what the kernel refused or kept.</p>
       <div class="hero-table" id="hero" hidden data-shot="hero">
         <table>
@@ -99,7 +101,6 @@
 
   <section class="contract" id="contractCard" hidden data-shot="contract">
     <div class="wrap">
-      <p class="step-k">03</p>
       <h2>The contract a person approves</h2>
       <p class="sub">Proposed by the model from what was observed. Code enforces it. Nothing runs under it until you click.</p>
       <div class="two">
@@ -111,7 +112,6 @@
 
   <section class="register" id="evidence">
     <div class="wrap">
-      <p class="step-k">04</p>
       <h2>Evidence, as the host recorded it</h2>
       <p class="sub">The probe the model wrote, every syscall with its label, the transcripts, the compiled profile, the inference log, the bundle.</p>
       <div id="panels" hidden>
@@ -130,7 +130,6 @@
 
   <section class="how" id="how">
     <div class="wrap">
-      <p class="step-k">05</p>
       <h2>How it works</h2>
       <ol class="steps">
         <li><b>Probe</b>Vultr Serverless Inference writes a short probe against a four-function harness. A syntax-tree validator accepts or rejects it. The probe is hashed and frozen.</li>
@@ -142,7 +141,6 @@
 
   <section class="onvultr" id="vultr-section">
     <div class="wrap">
-      <p class="step-k">06</p>
       <h2 class="h2-tight">Running on Vultr</h2>
       <div class="vtiles" id="vultr">
         <div class="vtile"><div class="vtile-k">Live on Vultr Cloud Compute</div><div class="vtile-v" id="vmRegion">region pending</div><p class="vtile-s"><span id="vmInstance" class="mono">instance pending</span>. Orchestrator, every sandbox, the gateway and this page run on this VM.</p></div>
@@ -157,7 +155,6 @@
 
   <section class="team" id="team">
     <div class="wrap">
-      <p class="step-k">07</p>
       <h2>Who built it</h2>
       <div class="people">
         <div class="person"><img src="img/timotej.jpg" alt="Portrait of Timotej Cvikl" loading="lazy" width="210" height="262"><b>Timotej Cvikl</b><span>Computer science, University of Ljubljana. Accelerate Cambridge. Winner, Luminance challenge, Hack the Law 2026.</span></div>
