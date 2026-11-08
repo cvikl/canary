@@ -29,147 +29,173 @@
   </div>
 </header>
 
-<main class="wrap">
+<main>
   <section class="hero">
-    <h1>The tool returned the right answer.<br><span class="hero-red">It also read the SSH key.</span></h1>
-    <p class="lede">An MCP schema says how to call a tool, not what it touches. Canary Cage writes a probe, runs it in an isolated sandbox on Vultr, records what the tool did, and replays the same probe under a contract a person approved.</p>
-
-    <form class="console" id="controls" data-shot="controls" onsubmit="return false">
-      <div class="field">
-        <label for="scenario">MCP server</label>
-        <select id="scenario"><option value="repo-assistant">@canary-lab/repo-assistant, synthetic fixture</option></select>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>The tool returned the right answer.<br><span class="hero-red">It also read the SSH key.</span></h1>
+        <p class="lede">An MCP schema says how to call a tool, not what it touches. Canary Cage writes a probe, runs it in an isolated sandbox on Vultr, records what the tool did, and replays the same probe under a contract a person approved.</p>
+        <p class="lede-2">Same tool, same input, less authority. The record below is a real run on this server.</p>
       </div>
-      <div class="field">
-        <label for="tool">Tool</label>
-        <select id="tool"><option value="summarize_repository">summarize_repository</option><option value="search_documentation">search_documentation</option></select>
-      </div>
-      <div class="actions">
-        <button id="run" class="btn primary" type="button" data-shot="run">Run the loop</button>
-        <button id="showCached" class="btn quiet" type="button" hidden>Show the last recorded run</button>
-      </div>
-      <p class="task" id="task">Task. Summarise /workspace/repository as JSON and check the result has content. Curated scenario only.</p>
-      <p class="status" id="status" data-shot="status" aria-live="polite">Idle. One sandbox run at a time; a second visitor sees a queue position.</p>
-      <div class="badges" id="badges" data-shot="badges"></div>
-    </form>
-
-    <ol class="rail" id="stages" data-shot="stages" aria-label="Stages">
-      <li data-stage="inspecting"><b>Inspect</b></li>
-      <li data-stage="probing"><b>Probe</b></li>
-      <li data-stage="baseline"><b>Baseline</b></li>
-      <li data-stage="discovering"><b>Discover</b></li>
-      <li data-stage="awaiting_approval"><b>Contract</b></li>
-      <li data-stage="compiling"><b>Enforce</b></li>
-      <li data-stage="replaying"><b>Replay</b></li>
-    </ol>
+      <form class="console" id="controls" data-shot="controls" onsubmit="return false">
+        <h2 class="console-title">Run it</h2>
+        <div class="field">
+          <label for="scenario">MCP server</label>
+          <select id="scenario"><option value="repo-assistant">@canary-lab/repo-assistant, synthetic fixture</option></select>
+        </div>
+        <div class="field">
+          <label for="tool">Tool</label>
+          <select id="tool"><option value="summarize_repository">summarize_repository</option><option value="search_documentation">search_documentation</option></select>
+        </div>
+        <p class="task" id="task">Task. Summarise /workspace/repository as JSON and check the result has content. Curated scenario only.</p>
+        <div class="actions">
+          <button id="run" class="btn primary" type="button" data-shot="run">Run the loop</button>
+          <button id="showCached" class="btn quiet" type="button" hidden>Show the last recorded run</button>
+        </div>
+        <p class="status" id="status" data-shot="status" aria-live="polite">Idle. One sandbox run at a time; a second visitor sees a queue position.</p>
+        <div class="badges" id="badges" data-shot="badges"></div>
+      </form>
+    </div>
+    <div class="wrap">
+      <ol class="rail" id="stages" data-shot="stages" aria-label="Stages">
+        <li data-stage="inspecting"><b>Inspect</b><span>live tools/list</span></li>
+        <li data-stage="probing"><b>Probe</b><span>model writes, validator decides</span></li>
+        <li data-stage="baseline"><b>Baseline</b><span>run A, no tool call</span></li>
+        <li data-stage="discovering"><b>Discover</b><span>run B, traced</span></li>
+        <li data-stage="awaiting_approval"><b>Contract</b><span>a person approves</span></li>
+        <li data-stage="compiling"><b>Enforce</b><span>compiled profile</span></li>
+        <li data-stage="replaying"><b>Replay</b><span>run C, same probe</span></li>
+      </ol>
+    </div>
   </section>
 
   <section class="record" id="record">
-    <div class="identity" id="identity" hidden data-shot="identity">
-      <details>
-        <summary><span id="identityLabel" class="idlabel">Replay identity</span><span class="hint">four hashes</span></summary>
-        <table class="kv" id="hashes"></table>
-      </details>
-      <p class="contract-hash" id="contractHash"></p>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>The record</h2>
+        <p class="sub">What the tool did in discovery, and what the same probe did under the approved contract.</p>
+      </div>
+      <div class="identity" id="identity" hidden data-shot="identity">
+        <details>
+          <summary><span id="identityLabel" class="idlabel">Replay identity</span><span class="hint">four hashes</span></summary>
+          <table class="kv" id="hashes"></table>
+        </details>
+        <p class="contract-hash" id="contractHash"></p>
+      </div>
+      <div class="hero-table" id="hero" hidden data-shot="hero">
+        <table>
+          <thead><tr><th>Discovery, run B</th><th>Enforced replay, run C</th></tr></thead>
+          <tbody id="heroBody"></tbody>
+        </table>
+        <p class="explanation" id="explanation" data-shot="explanation"></p>
+      </div>
+      <dl class="stats" id="stats" data-shot="stats" aria-label="Numbers from the run">
+        <div><dt>syscalls traced in discovery</dt><dd id="statSyscalls" class="pending">pending</dd></div>
+        <div><dt>caught at the gateway</dt><dd id="statGateway" class="pending">pending</dd></div>
+        <div><dt>Vultr inference calls</dt><dd id="statCalls" class="pending">pending</dd></div>
+        <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds" class="pending">pending</dd></div>
+        <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
+        <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
+      </dl>
+      <p class="stats-note" id="statsNote"></p>
     </div>
-
-    <div class="hero-table" id="hero" hidden data-shot="hero">
-      <table>
-        <thead><tr><th>Discovery, run B</th><th>Enforced replay, run C</th></tr></thead>
-        <tbody id="heroBody"></tbody>
-      </table>
-      <p class="explanation" id="explanation" data-shot="explanation"></p>
-    </div>
-
-    <dl class="stats" id="stats" data-shot="stats" aria-label="Numbers from the run">
-      <div><dt>syscalls traced in discovery</dt><dd id="statSyscalls" class="pending">pending</dd></div>
-      <div><dt>caught at the gateway</dt><dd id="statGateway" class="pending">pending</dd></div>
-      <div><dt>Vultr inference calls</dt><dd id="statCalls" class="pending">pending</dd></div>
-      <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds" class="pending">pending</dd></div>
-      <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
-      <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
-    </dl>
-    <p class="stats-note" id="statsNote"></p>
   </section>
 
   <section class="contract" id="contractCard" hidden data-shot="contract">
-    <h2>Capability contract</h2>
-    <p class="sub">Proposed by Vultr Serverless Inference from the declared job and what was observed. Edit if you wish, then approve.</p>
-    <div class="two">
-      <div>
-        <h3>Observed during the tool-call window</h3>
-        <div class="tbl"><table class="matrix" id="matrixWindow" data-shot="matrix"></table></div>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>The contract</h2>
+        <p class="sub">Proposed by Vultr Serverless Inference from the declared job and what was observed. Edit if you wish, then approve. Nothing is enforced until a person clicks.</p>
       </div>
-      <div>
-        <h3>Contract, closed schema</h3>
-        <textarea id="contractText" rows="14" spellcheck="false" data-shot="contractText" aria-label="Contract JSON"></textarea>
-        <p class="error" id="contractError" aria-live="polite"></p>
-        <button id="approve" class="btn primary" type="button" data-shot="approve">Approve contract and replay</button>
+      <div class="two">
+        <div>
+          <h3>Observed during the tool-call window</h3>
+          <div class="tbl"><table class="matrix" id="matrixWindow" data-shot="matrix"></table></div>
+        </div>
+        <div>
+          <h3>Contract, closed schema</h3>
+          <textarea id="contractText" rows="16" spellcheck="false" data-shot="contractText" aria-label="Contract JSON"></textarea>
+          <p class="error" id="contractError" aria-live="polite"></p>
+          <button id="approve" class="btn primary" type="button" data-shot="approve">Approve contract and replay</button>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="register" id="evidence">
-    <h2>Evidence</h2>
-    <p class="sub">What the verdict rests on, as the host recorded it.</p>
-    <div id="panels" hidden>
-      <details id="probeDetails" data-shot="probe"><summary>Probe written by the model<span class="hint">source, validator result, baseline derivation</span></summary><div id="probePanel"></div></details>
-      <details id="mcpDetails"><summary>MCP messages<span class="hint">JSON-RPC transcript per run</span></summary><div id="mcpPanel"></div></details>
-      <details id="straceDetails" data-shot="strace"><summary>Labelled strace events<span class="hint">host-side, attached before the probe started</span></summary><div id="stracePanel"></div></details>
-      <details id="profileDetails"><summary>Compiled Docker profile<span class="hint">what the contract became</span></summary><div id="profilePanel"></div></details>
-      <details id="ledgerDetails" data-shot="ledger"><summary>Vultr inference log<span class="hint">model, latency, tokens, status</span></summary><div id="ledgerPanel"></div></details>
-      <details id="compareDetails" data-shot="compare"><summary>Output comparison and denied paths<span class="hint">field by field, real OS errors</span></summary><div id="comparePanel"></div></details>
-      <details id="bundleDetails" data-shot="bundle"><summary>Evidence bundle<span class="hint">zip of everything above</span></summary><div id="bundlePanel"></div></details>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Evidence</h2>
+        <p class="sub">What the verdict rests on, as the host recorded it.</p>
+      </div>
+      <div id="panels" hidden>
+        <details id="probeDetails" data-shot="probe"><summary>Probe written by the model<span class="hint">source, validator result, baseline derivation</span></summary><div id="probePanel"></div></details>
+        <details id="mcpDetails"><summary>MCP messages<span class="hint">JSON-RPC transcript per run</span></summary><div id="mcpPanel"></div></details>
+        <details id="straceDetails" data-shot="strace"><summary>Labelled strace events<span class="hint">host-side, attached before the probe started</span></summary><div id="stracePanel"></div></details>
+        <details id="profileDetails"><summary>Compiled Docker profile<span class="hint">what the contract became</span></summary><div id="profilePanel"></div></details>
+        <details id="ledgerDetails" data-shot="ledger"><summary>Vultr inference log<span class="hint">model, latency, tokens, status</span></summary><div id="ledgerPanel"></div></details>
+        <details id="compareDetails" data-shot="compare"><summary>Output comparison and denied paths<span class="hint">field by field, real OS errors</span></summary><div id="comparePanel"></div></details>
+        <details id="bundleDetails" data-shot="bundle"><summary>Evidence bundle<span class="hint">zip of everything above</span></summary><div id="bundlePanel"></div></details>
+      </div>
+      <p class="empty" id="panelsEmpty">The panels fill as a run progresses.</p>
     </div>
-    <p class="empty" id="panelsEmpty">The panels fill as a run progresses.</p>
   </section>
 
   <section class="how" id="how">
-    <h2>How it works</h2>
-    <p class="sub">The model writes and proposes. Code validates, runs, enforces and decides.</p>
-    <ol class="steps">
-      <li><b>Inspect.</b> A fresh container answers tools/list. The live schema is stored, the container destroyed.</li>
-      <li><b>Probe.</b> Vultr Serverless Inference writes a short program against a four-function harness. An AST validator accepts or rejects it. The probe is hashed and frozen.</li>
-      <li><b>Baseline, run A.</b> The same probe minus its tool call. Fresh container, strace attached from the host.</li>
-      <li><b>Discover, run B.</b> The full probe on a private network whose only exit is our recording gateway.</li>
-      <li><b>Attribute.</b> Every syscall gets one of five labels, including attribution uncertain.</li>
-      <li><b>Contract.</b> The model proposes the narrowest contract. A person edits or approves.</li>
-      <li><b>Enforce.</b> A deterministic compiler turns the contract into a Docker profile. Network none, denied files masked.</li>
-      <li><b>Replay, run C.</b> Identical probe by hash, identical fixture. The real OS error is recorded. Output compared field by field.</li>
-      <li><b>Explain and bundle.</b> The model writes prose beside the verdict and cannot change a label.</li>
-    </ol>
-    <p class="vultr">One Vultr Cloud Compute VM runs the orchestrator, every sandbox, the gateway and this page. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>How it works</h2>
+        <p class="sub">The model writes and proposes. Code validates, runs, enforces and decides.</p>
+      </div>
+      <ol class="steps">
+        <li><b>Inspect</b>A fresh container answers tools/list. The live schema is stored, the container destroyed.</li>
+        <li><b>Probe</b>Vultr Serverless Inference writes a short program against a four-function harness. An AST validator accepts or rejects it. The probe is hashed and frozen.</li>
+        <li><b>Baseline, run A</b>The same probe minus its tool call. Fresh container, strace attached from the host.</li>
+        <li><b>Discover, run B</b>The full probe on a private network whose only exit is our recording gateway.</li>
+        <li><b>Attribute</b>Every syscall gets one of five labels, including attribution uncertain.</li>
+        <li><b>Contract</b>The model proposes the narrowest contract. A person edits or approves.</li>
+        <li><b>Enforce</b>A deterministic compiler turns the contract into a Docker profile. Network none, denied files masked.</li>
+        <li><b>Replay, run C</b>Identical probe by hash, identical fixture. The real OS error is recorded. Output compared field by field.</li>
+        <li><b>Explain and bundle</b>The model writes prose beside the verdict and cannot change a label.</li>
+      </ol>
+      <p class="vultr">One Vultr Cloud Compute VM runs the orchestrator, every sandbox, the gateway and this page. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
+    </div>
   </section>
 
   <section class="limits" id="limits">
-    <h2>What this shows and what it does not</h2>
-    <div class="two cols-text">
-      <div>
-        <h3>Can show, for one recorded run</h3>
-        <ul>
-          <li>Which file, process and network actions the host observed during startup and during one isolated tool call.</li>
-          <li>Whether an action fell outside the approved capability contract.</li>
-          <li>Whether a run-specific canary was contacted or included in an outbound payload.</li>
-          <li>Whether the locked probe produced a useful result after enforcement.</li>
-        </ul>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>What it shows and what it does not</h2>
       </div>
-      <div>
-        <h3>Does not claim</h3>
-        <ul>
-          <li>That the tool behaves the same way for every input, environment, version or future run.</li>
-          <li>That every obfuscated, kernel-level or encrypted action can be decoded.</li>
-          <li>That output equivalence can always be decided by string equality.</li>
-          <li>That processes are prevented. They are observed and compared. The validator restricts what a probe may say. Docker is the boundary.</li>
-        </ul>
+      <div class="two cols-text">
+        <div>
+          <h3>Shows, for one recorded run</h3>
+          <ul>
+            <li>Which file, process and network actions the host observed during startup and during one isolated tool call.</li>
+            <li>Whether an action fell outside the approved capability contract.</li>
+            <li>Whether a run-specific canary was contacted or included in an outbound payload.</li>
+            <li>Whether the locked probe produced a useful result after enforcement.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Does not claim</h3>
+          <ul>
+            <li>That the tool behaves the same way for every input, environment, version or future run.</li>
+            <li>That every obfuscated, kernel-level or encrypted action can be decoded.</li>
+            <li>That output equivalence can always be decided by string equality.</li>
+            <li>That processes are prevented. They are observed and compared. The validator restricts what a probe may say. Docker is the boundary.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="wrap foot" data-shot="footer">
+<footer class="foot" data-shot="footer"><div class="wrap">
   <p id="vmLine" data-shot="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
   <p id="lifecycleLine">Containers. Each run gets a fresh container that is destroyed on every exit path.</p>
   <p>Vanta Point Labs. Timotej Cvikl, Bernard Liu, Jeremy Sosabowski (advisor). MIT licence. The fixture is synthetic; FIXTURE and cached states are labelled.</p>
-</footer>
+</div></footer>
 <script src="app.js"></script>
 </body>
 </html>
