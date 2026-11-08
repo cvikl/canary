@@ -48,8 +48,7 @@
       <div class="hero-copy">
         <p class="hero-kicker">Vultr Agent Rush · Blast Radius Zero · Vanta Point Labs</p>
         <h1>The tool returned the right answer.<br><span class="hero-red">It also read the SSH key.</span></h1>
-        <p class="lede">An MCP schema says how to call a tool, not what it touches. Canary Cage writes a probe, runs it in an isolated sandbox on Vultr, records what the tool did, and replays the same probe under a contract a person approved.</p>
-        <p class="lede-2">Same tool, same input, less authority. The record below is a real run on this server.</p>
+        <p class="lede">Canary Cage writes a probe, runs it in an isolated sandbox on Vultr, records what the tool did, and replays the same probe under a contract a person approved. Same tool, same input, less authority.</p>
       </div>
       <form class="console" id="controls" data-shot="controls" onsubmit="return false">
         <h2 class="console-title">Run it</h2>
@@ -88,7 +87,7 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>The record</h2>
-        <p class="sub">What the tool did in discovery, and what the same probe did under the approved contract.</p>
+        <p class="sub">A real run on this server. Left, what the tool did. Right, the same probe under the approved contract.</p>
       </div>
       <div class="identity" id="identity" hidden data-shot="identity">
         <details>
@@ -109,8 +108,8 @@
         <div><dt>caught at the gateway</dt><dd id="statGateway" class="pending">pending</dd></div>
         <div><dt>Vultr inference calls</dt><dd id="statCalls" class="pending">pending</dd></div>
         <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds" class="pending">pending</dd></div>
-        <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
-        <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
+        <div hidden><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
+        <div hidden><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
       </dl>
       <p class="stats-note" id="statsNote"></p>
       <figure class="chart" id="timeline" hidden data-shot="timeline">
@@ -126,7 +125,7 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>Running on Vultr</h2>
-        <p class="sub">Both required services, doing the work. Values below are read live from this server.</p>
+        <p class="sub">Values read live from this server.</p>
       </div>
       <div class="vtiles">
         <div class="vtile">
@@ -135,8 +134,7 @@
           <dl class="vkv">
             <div><dt>instance id</dt><dd id="vmInstance" class="mono">pending</dd></div>
             <div><dt>hostname</dt><dd id="vmHost" class="mono">pending</dd></div>
-            <div><dt>runs on this VM</dt><dd>orchestrator under systemd, every sandbox container, the recording gateway, this page</dd></div>
-            <div><dt>source</dt><dd>Vultr metadata service, 169.254.169.254, read by the host at start</dd></div>
+            <div><dt>runs here</dt><dd>orchestrator, every sandbox, the gateway, this page</dd></div>
           </dl>
         </div>
         <div class="vtile">
@@ -145,8 +143,7 @@
           <dl class="vkv">
             <div><dt>endpoint</dt><dd id="infEndpoint" class="mono">pending</dd></div>
             <div><dt>calls in the run shown</dt><dd id="infCalls">pending</dd></div>
-            <div><dt>budget left today</dt><dd id="infBudget">pending</dd></div>
-            <div><dt>no other provider</dt><dd>probe synthesis, optional repair, contract proposal and explanation all go here; nothing else is in the code path</dd></div>
+            <div><dt>no other provider</dt><dd id="infBudget">anywhere in the code path</dd></div>
           </dl>
         </div>
       </div>
@@ -159,10 +156,9 @@
         <div>
           <div class="sec-head">
             <h2>The problem</h2>
-            <p class="sub">Agents get their tools through MCP servers. A tool's schema tells the agent what arguments to send. It says nothing about what the implementation does to the machine it runs on. A tool can return a correct answer and, on the way, read a .env file, copy an SSH key and send both somewhere.</p>
+            <p class="sub">A tool's schema says what arguments to send. It says nothing about what the code does to the machine. A tool can return the right answer and, on the way, read a .env file, copy an SSH key and send both somewhere.</p>
           </div>
-          <p class="problem-text">The people who feel this are the platform, developer-experience and application-security teams who approve MCP servers for coding assistants. Today their decision is binary and poorly evidenced. Trust the server or reject it.</p>
-          <p class="problem-text">The canary in the mine did one job. It showed, before anyone was hurt, that something in the air was wrong. Canary Cage plants canaries a tool should never touch, watches from outside the cage, and shows exactly what the tool reached for.</p>
+          <p class="problem-text">The teams who approve MCP servers choose between trust and reject, with no evidence either way. Canary Cage plants canaries a tool should never touch, watches from outside the cage, and shows what the tool reached for.</p>
         </div>
         <figure class="photo">
           <img src="img/canary.jpg" alt="A domestic canary on a perch" loading="lazy" width="1600" height="1067">
@@ -170,17 +166,6 @@
         </figure>
       </div>
       <div class="charts">
-        <figure class="bars">
-          <figcaption><b>Developers using or planning to use AI tools</b><span>Share of respondents, Stack Overflow Developer Survey, axis from 60 percent</span></figcaption>
-          <svg viewBox="0 0 520 220" role="img" aria-label="Bar chart, 70 percent in 2023, 76 percent in 2024, 84 percent in 2025">
-            <line class="axis" x1="60" y1="180" x2="500" y2="180"/>
-            <text x="54" y="184" text-anchor="end">60</text><text x="54" y="104" text-anchor="end">75</text><text x="54" y="24" text-anchor="end">90</text>
-            <rect class="bar" x="110" y="126.7" width="80" height="53.3" rx="3"/><text class="val" x="150" y="116" text-anchor="middle">70 percent</text><text x="150" y="204" text-anchor="middle">2023</text>
-            <rect class="bar" x="240" y="94.7" width="80" height="85.3" rx="3"/><text class="val" x="280" y="84" text-anchor="middle">76 percent</text><text x="280" y="204" text-anchor="middle">2024</text>
-            <rect class="bar accent" x="370" y="52" width="80" height="128" rx="3"/><text class="val" x="410" y="42" text-anchor="middle">84 percent</text><text x="410" y="204" text-anchor="middle">2025</text>
-          </svg>
-          <p class="source">Source. <a href="https://survey.stackoverflow.co/2025/ai" rel="noopener">Stack Overflow Developer Survey 2023 to 2025</a>.</p>
-        </figure>
         <figure class="bars">
           <figcaption><b>Supply-chain campaigns against coding agents, per year</b><span>Campaigns tracked, delivered through MCP servers, rules files and READMEs with hidden instructions</span></figcaption>
           <svg viewBox="0 0 520 220" role="img" aria-label="Bar chart, 6 campaigns in 2024, 14 in 2025">
@@ -199,7 +184,7 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>The contract</h2>
-        <p class="sub">Proposed by Vultr Serverless Inference from the declared job and what was observed. Edit if you wish, then approve. Nothing is enforced until a person clicks.</p>
+        <p class="sub">Proposed by Vultr Serverless Inference from what was observed. Edit if you wish, then approve.</p>
       </div>
       <div class="two">
         <div>
@@ -220,7 +205,7 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>Evidence</h2>
-        <p class="sub">What the verdict rests on, as the host recorded it.</p>
+        <p class="sub">Everything the verdict rests on.</p>
       </div>
       <div id="panels" hidden>
         <details id="probeDetails" data-shot="probe"><summary>Probe written by the model<span class="hint">source, validator result, baseline derivation</span></summary><div id="probePanel"></div></details>
@@ -239,29 +224,29 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>How it works</h2>
-        <p class="sub">The model writes and proposes. Code validates, runs, enforces and decides.</p>
+        <p class="sub">The model writes and proposes. Code decides.</p>
       </div>
       <ol class="steps">
-        <li><b>Inspect</b>A fresh container answers tools/list. The live schema is stored, the container destroyed.</li>
-        <li><b>Probe</b>Vultr Serverless Inference writes a short program against a four-function harness. An AST validator accepts or rejects it. The probe is hashed and frozen.</li>
-        <li><b>Baseline, run A</b>The same probe minus its tool call. Fresh container, strace attached from the host.</li>
-        <li><b>Discover, run B</b>The full probe on a private network whose only exit is our recording gateway.</li>
-        <li><b>Attribute</b>Every syscall gets one of five labels, including attribution uncertain.</li>
-        <li><b>Contract</b>The model proposes the narrowest contract. A person edits or approves.</li>
-        <li><b>Enforce</b>A deterministic compiler turns the contract into a Docker profile. Network none, denied files masked.</li>
-        <li><b>Replay, run C</b>Identical probe by hash, identical fixture. The real OS error is recorded. Output compared field by field.</li>
+        <li><b>Inspect</b>A fresh container answers tools/list.</li>
+        <li><b>Probe</b>Vultr Serverless Inference writes the probe. A syntax-tree validator accepts or rejects it. The probe is hashed.</li>
+        <li><b>Baseline, run A</b>The probe without its tool call. strace from the host.</li>
+        <li><b>Discover, run B</b>The full probe. Its only exit is our recording gateway.</li>
+        <li><b>Attribute</b>Every syscall gets one of five labels.</li>
+        <li><b>Contract</b>The model proposes. A person approves.</li>
+        <li><b>Enforce</b>A compiler turns the contract into a Docker profile.</li>
+        <li><b>Replay, run C</b>Same probe by hash. The real OS error is recorded. Output compared field by field.</li>
         <li><b>Explain and bundle</b>The model writes prose beside the verdict and cannot change a label.</li>
       </ol>
       <figure class="figure">
         <img src="img/architecture.png" alt="Diagram of the nine steps split between the host on the Vultr VM and the fresh sandbox used for each run" loading="lazy" width="1200" height="688">
         <figcaption>The nine steps, split between the host on the Vultr VM, which holds all authority, and the fresh sandbox used for each run.</figcaption>
       </figure>
-      <div class="vultr-grid">
+      <div class="vultr-stack">
         <figure class="photo">
           <img src="img/vm-terminal.png" alt="SSH session on the Vultr VM: Ubuntu 24.04.5 LTS, IPv4 95.179.177.22, prompt root@canary-cage" loading="lazy" width="1300" height="730">
           <figcaption>SSH into the VM, 8 November 2026. Ubuntu 24.04.5 LTS, 95.179.177.22, root@canary-cage.</figcaption>
         </figure>
-        <p class="vultr">One Vultr Cloud Compute VM in Amsterdam runs the orchestrator, every sandbox, the recording gateway and this page. The sandboxes never see the inference key, the Docker socket or a host path. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
+        <p class="vultr">One Vultr Cloud Compute VM in Amsterdam runs all of it. Sandboxes never see the inference key, the Docker socket or a host path.</p>
       </div>
     </div>
   </section>
@@ -270,7 +255,7 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>Who built it</h2>
-        <p class="sub">Vanta Point Labs, Cambridge. Built on 8 November 2026 for Vultr Agent Rush.</p>
+        <p class="sub">Vanta Point Labs. Built on 8 November 2026 for Vultr Agent Rush.</p>
       </div>
       <div class="people">
         <div class="person"><img src="img/timotej.jpg" alt="Portrait of Timotej Cvikl" loading="lazy" width="210" height="262"><b>Timotej Cvikl</b><span>Product and engineering. Computer science, AI track, University of Ljubljana. Accelerate Cambridge, Cambridge Judge Business School. Winner of the Luminance challenge at Hack the Law 2026 and of AIxPravo 2026.</span></div>
@@ -283,18 +268,9 @@
   <section class="limits" id="limits">
     <div class="wrap">
       <div class="sec-head">
-        <h2>What it shows and what it does not</h2>
+        <h2>What it does not claim</h2>
       </div>
-      <div class="two cols-text">
-        <div>
-          <h3>Shows, for one recorded run</h3>
-          <ul>
-            <li>Which file, process and network actions the host observed during startup and during one isolated tool call.</li>
-            <li>Whether an action fell outside the approved capability contract.</li>
-            <li>Whether a run-specific canary was contacted or included in an outbound payload.</li>
-            <li>Whether the locked probe produced a useful result after enforcement.</li>
-          </ul>
-        </div>
+      <div class="cols-text one">
         <div>
           <h3>Does not claim</h3>
           <ul>
@@ -314,7 +290,7 @@
   <p class="foot-links"><a href="canary-cage-demo.mp4">Three-minute film</a> · <a href="slides.pdf">Slides, PDF</a> · <a href="https://github.com/cvikl/canary" rel="noopener">Source on GitHub</a></p>
   <p id="vmLine" data-shot="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
   <p id="lifecycleLine">Containers. Each run gets a fresh container that is destroyed on every exit path.</p>
-  <p>Vanta Point Labs. Timotej Cvikl, Bernard Liu, Jeremy Wong (advisor). MIT licence. The fixture is synthetic; FIXTURE and cached states are labelled.</p>
+  <p>Vanta Point Labs. MIT licence. The fixture is synthetic; FIXTURE and cached states are labelled.</p>
 </div></footer>
 <script src="app.js"></script>
 </body>

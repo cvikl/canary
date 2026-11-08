@@ -154,7 +154,7 @@ function renderVultr() {
     $("vmHost").textContent = meta.vm?.hostname || "n/a";
     $("infModel").textContent = meta.model;
     $("infEndpoint").textContent = meta.inference_endpoint;
-    $("infBudget").textContent = `${meta.budget_remaining} of ${meta.daily_budget} calls`;
+
   }
   if (run?.inference_ledger?.length) { const l = run.inference_ledger; const ms = l.reduce((a, e) => a + (e.latency_ms || 0), 0); $("infCalls").textContent = `${l.length} (${l.map((e) => e.purpose).join(", ")}), ${(ms / 1000).toFixed(1)} s of model time, label ${l[0].label}`; }
 }
