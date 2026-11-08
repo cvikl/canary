@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Canary Cage for MCP</title>
 <meta name="description" content="An agent that writes and runs behavioural probes against MCP tools inside isolated Vultr sandboxes, discovers what each tool actually touches, and replays the identical probe under a human-approved least-privilege contract.">
-<meta name="theme-color" content="#F4F6F8">
+<meta name="theme-color" content="#F5F4EF">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='4' fill='none' stroke='%23131A23' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='%23B3261E'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,12 +83,12 @@
     </div>
 
     <dl class="stats" id="stats" data-shot="stats" aria-label="Numbers from the run">
-      <div><dt>syscalls traced in discovery</dt><dd id="statSyscalls">—</dd></div>
-      <div><dt>caught at the gateway</dt><dd id="statGateway">—</dd></div>
-      <div><dt>Vultr inference calls</dt><dd id="statCalls">—</dd></div>
-      <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds">—</dd></div>
-      <div><dt>containers created and destroyed</dt><dd id="statContainers">—</dd></div>
-      <div><dt>denied by the kernel in replay</dt><dd id="statDenied">—</dd></div>
+      <div><dt>syscalls traced in discovery</dt><dd id="statSyscalls" class="pending">pending</dd></div>
+      <div><dt>caught at the gateway</dt><dd id="statGateway" class="pending">pending</dd></div>
+      <div><dt>Vultr inference calls</dt><dd id="statCalls" class="pending">pending</dd></div>
+      <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds" class="pending">pending</dd></div>
+      <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
+      <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
     </dl>
     <p class="stats-note" id="statsNote">Numbers appear from the run above, or from the last recorded run.</p>
   </section>
@@ -160,7 +160,7 @@
       <div>
         <h3>Does not claim</h3>
         <ul>
-          <li>That the tool is safe for every input, environment, version or future run.</li>
+          <li>That the tool behaves the same way for every input, environment, version or future run.</li>
           <li>That every obfuscated, kernel-level or encrypted action can be decoded.</li>
           <li>That output equivalence can always be decided by string equality.</li>
           <li>That processes are prevented. They are observed and compared. The validator restricts what a probe may say. Docker is the boundary.</li>

@@ -26,17 +26,19 @@ function badges() {
 function renderHero() {
   if (!run?.hero?.length) { $("hero").hidden = true; return; }
   $("hero").hidden = false;
-  $("heroBody").innerHTML = run.hero.map((r) => `<tr class="${esc(r.state)}${/observed|attempted|exceeded/.test(r.discovery) && !/not observed/.test(r.discovery) ? " observed" : ""}"><td>${esc(r.discovery)}</td><td>${esc(r.replay)}</td></tr>`).join("");
-  $("explanation").innerHTML = run.explanation ? `${esc(run.explanation.text)} <span class="badge${run.explanation.label === "FIXTURE" ? " warn" : ""}">explanation: ${esc(run.explanation.label)}</span>` : "";
+  const heroKey = JSON.stringify(run.hero);
+  if ($("heroBody").dataset.key !== heroKey) { $("heroBody").dataset.key = heroKey; $("heroBody").innerHTML = run.hero.map((r) => `<tr class="${esc(r.state)}${/observed|attempted|exceeded/.test(r.discovery) && !/not observed/.test(r.discovery) ? " observed" : ""}"><td>${esc(r.discovery)}</td><td>${esc(r.replay)}</td></tr>`).join(""); }
+  const fullStop = (t) => { const i = t.lastIndexOf("."); return i > 40 ? t.slice(0, i + 1) : t; };
+  $("explanation").innerHTML = run.explanation ? `${esc(fullStop(run.explanation.text))} <span class="badge${run.explanation.label === "FIXTURE" ? " warn" : ""}">explanation ${esc(run.explanation.label)}</span>` : "";
 }
 function renderIdentity() {
   const h = run?.hashes; if (!h?.probe) { $("identity").hidden = true; return; }
   $("identity").hidden = false;
   const v = h.replay_identity_verified;
   $("identityLabel").textContent = v === true ? "Replay identity verified. Probe, call, server and fixture match discovery." : v === false ? "Replay identity NOT verified. Something differed between discovery and replay." : "Replay identity pending. Discovery hashes frozen.";
-  $("identityLabel").className = "label " + (v === true ? "ok" : v === false ? "bad" : "pending");
+  $("identityLabel").className = "idlabel " + (v === true ? "ok" : v === false ? "bad" : "pending");
   $("hashes").innerHTML = [["Probe hash", h.probe], ["Call hash", h.call], ["Server image id", h.image], ["Fixture digest", h.fixture]].map(([k, val]) => `<tr><td>${k}</td><td><code>${esc(val || "pending")}</code></td></tr>`).join("");
-  $("contractHash").textContent = h.contract ? `Contract hash, shown apart because it names the one deliberate change: ${h.contract}` : "Contract hash appears after approval.";
+  $("contractHash").textContent = h.contract ? `Contract hash, shown apart because it names the one deliberate change. ${h.contract}` : "Contract hash appears after approval.";
 }
 const inWindow = (r) => r.labels.some((l) => l.startsWith("newly") || l === "attribution uncertain");
 function renderContract() {
@@ -61,25 +63,25 @@ function tabs(container, items, render) {
   show(keys[keys.length - 1]);
 }
 function renderStats() {
-  const set = (id, v, cls) => { const el = $(id); el.textContent = v; el.className = cls || ""; };
+  const set = (id, v, cls) => { const el = $(id); el.textContent = v; el.className = (v === "pending" ? "pending " : "") + (cls || ""); };
   const src = run && (run.runs?.B || run.status === "complete") ? run : null;
   if (!src) { $("statsNote").textContent = meta?.cached_available ? "Numbers come from the run above once it exists, or from the last recorded run (press Show the last recorded run)." : "Numbers appear from the run above."; return; }
   const B = src.runs?.B, C = src.runs?.C;
   const first = src.runs?.inspect?.started_at ? new Date(src.runs.inspect.started_at).getTime() : null;
   const last = C?.ended_at ? new Date(C.ended_at).getTime() : B?.ended_at ? new Date(B.ended_at).getTime() : null;
-  set("statSyscalls", B ? String(B.strace_events.length) : "—", B && !B.tracer.attached ? "red" : "");
-  set("statGateway", B ? String((B.gateway_log || []).filter((e) => e.kind !== "ready").length) : "—", B && B.gateway_log?.length ? "red" : "");
+  set("statSyscalls", B ? String(B.strace_events.length) : "pending", B && !B.tracer.attached ? "red" : "");
+  set("statGateway", B ? String((B.gateway_log || []).filter((e) => e.kind !== "ready").length) : "pending", B && B.gateway_log?.length ? "red" : "");
   set("statCalls", String(src.inference_ledger?.length || 0));
-  set("statSeconds", first && last ? String(Math.round((last - first) / 1000)) : "—");
+  set("statSeconds", first && last ? String(Math.round((last - first) / 1000)) : "pending");
   set("statContainers", String(Object.values(src.runs || {}).filter(Boolean).length));
   const denied = (src.denied_errors || []).filter((d) => d.errno).length;
-  set("statDenied", C ? String(denied) : "—", C && denied ? "green" : "");
+  set("statDenied", C ? String(denied) : "pending", C && denied ? "green" : "");
   $("statsNote").textContent = `${cached ? "From the last recorded run" : "From this run"}, id ${src.id.slice(0, 8)}, ${src.probe.label === "FIXTURE" ? "FIXTURE probe" : "live model " + (src.inference_ledger?.[0]?.model || "")}, tracer ${B?.tracer?.attached ? "attached" : "not attached"}.`;
 }
 function renderPanels() {
   if (!run) { $("panels").hidden = true; $("panelsEmpty").hidden = false; return; }
   $("panels").hidden = false; $("panelsEmpty").hidden = true;
-  $("probePanel").innerHTML = (run.probe.attempts || []).map((a) => `<p class="muted" data-shot="probeMeta${a.n}">Attempt ${a.n}, model ${esc(a.model)}, validator: ${a.validation.ok ? `<span class="tag">accepted, hash ${esc(a.validation.hash.slice(0, 16))}…</span>` : a.validation.violations.map((v) => `<span class="tag err">${esc(v)}</span>`).join("")}${a.runtimeError ? ` runtime: <span class="tag err">${esc(a.runtimeError.slice(0, 200))}</span>` : ""}</p>${pre(a.source)}`).join("") + (run.probe.baseline_source ? `<p class="muted">Run A baseline, derived deterministically by removing the tools/call:</p>${pre(run.probe.baseline_source)}` : "") || '<p class="muted">not written yet</p>';
+  $("probePanel").innerHTML = (run.probe.attempts || []).map((a) => `<p class="muted" data-shot="probeMeta${a.n}">Attempt ${a.n}, model ${esc(a.model)}, validator ${a.validation.ok ? `<span class="tag">accepted, hash ${esc(a.validation.hash.slice(0, 16))}…</span>` : a.validation.violations.map((v) => `<span class="tag err">${esc(v)}</span>`).join("")}${a.runtimeError ? ` runtime <span class="tag err">${esc(a.runtimeError.slice(0, 200))}</span>` : ""}</p>${pre(a.source)}`).join("") + (run.probe.baseline_source ? `<p class="muted">Run A baseline, derived deterministically by removing the tools/call:</p>${pre(run.probe.baseline_source)}` : "") || '<p class="muted">not written yet</p>';
   const runs = Object.fromEntries(Object.entries(run.runs || {}).filter(([, r]) => r));
   tabs($("mcpPanel"), runs, (r) => `<p class="muted">profile ${esc(r.profile)}, container ${esc(r.container_id.slice(0, 12))}, exit ${r.exit_code}${r.timed_out ? ", killed on wall clock" : ""}, window ${r.window.callSentAt ? `${r.window.callSentAt} to ${r.window.resultAt}` : "none"}</p>` + pre(r.mcp_transcript.map((m) => `${new Date(m.t).toISOString().slice(11, 23)} ${m.dir} ${JSON.stringify(m.msg)}`).join("\n")) + `<p class="muted">server stderr (untrusted, from inside the sandbox)</p>` + pre(r.server_stderr.join("")));
   tabs($("stracePanel"), runs, (r, k) => {
@@ -87,12 +89,12 @@ function renderPanels() {
     const id = `plat-${k}`;
     const table = (hide) => `<table class="matrix"><tr><th>time</th><th>pid</th><th>syscall</th><th>target</th><th>result</th><th>label</th></tr>${rows.filter((e) => !(hide && e.platform)).slice(0, 600).map((e) => `<tr><td>${new Date(e.t).toISOString().slice(11, 23)}</td><td>${e.pid}</td><td>${esc(e.syscall)}</td><td>${esc(e.target || e.args.slice(0, 80))}</td><td>${esc(e.errno ? e.errno : e.ret)}</td><td>${e.label ? `<span class="tag${e.label.startsWith("newly") ? " window" : ""}">${esc(e.label)}</span>` : ""}</td></tr>`).join("")}</table>`;
     setTimeout(() => { const cb = document.getElementById(id); const host = document.getElementById(id + "-t"); if (cb && host) cb.onchange = () => { host.innerHTML = table(cb.checked); }; }, 0);
-    return `<p class="muted" data-shot="tracer-${k}">tracer: ${r.tracer.attached ? "attached" : "not attached" + (r.tracer.reason ? ", " + esc(r.tracer.reason) : "")}, coverage ${esc(r.tracer.coverage)}, ${r.tracer.event_count} events. Gateway events: ${r.gateway_log.length}.</p><label class="filter"><input type="checkbox" id="${id}" checked> hide platform noise (node internals, /usr, /proc, /etc)</label><div id="${id}-t">${table(true)}</div>` + (r.gateway_log.length ? `<p class="muted">gateway log</p>${pre(r.gateway_log)}` : "");
+    return `<p class="muted" data-shot="tracer-${k}">tracer ${r.tracer.attached ? "attached" : "not attached" + (r.tracer.reason ? ", " + esc(r.tracer.reason) : "")}, coverage ${esc(r.tracer.coverage)}, ${r.tracer.event_count} events. Gateway events: ${r.gateway_log.length}.</p><label class="filter"><input type="checkbox" id="${id}" checked> hide platform noise (node internals, /usr, /proc, /etc)</label><div id="${id}-t">${table(true)}</div>` + (r.gateway_log.length ? `<p class="muted">gateway log</p>${pre(r.gateway_log)}` : "");
   });
   $("profilePanel").innerHTML = run.compiled_profile ? `<p class="muted">Equivalent docker run flags for the enforced profile (execution uses the Docker API with the same values).</p>${pre(run.compiled_profile.docker_run.join("\n"))}<p class="muted">Denied paths and mechanism</p>${pre(run.compiled_profile.denials)}<p class="muted">Enforced versus observed</p>${pre(run.compiled_profile.enforced)}` : `<p class="muted">Discovery profile (Run A and B): non-root uid 10001, all capabilities dropped, no new privileges, read-only root, tmpfs /tmp and /output noexec, 256 MB, 1 CPU, 64 PIDs, 20 s wall clock, internal network whose only exit is the recording gateway, empty environment. The enforced profile appears after approval.</p>` + (run.runs?.B ? pre(run.runs.B.host_config) : "");
   $("ledgerPanel").innerHTML = run.inference_ledger?.length ? `<table><tr><th>#</th><th>purpose</th><th>model</th><th>latency</th><th>tokens in/out</th><th>status</th><th>label</th></tr>${run.inference_ledger.map((e) => `<tr><td>${e.id}</td><td>${esc(e.purpose)}</td><td class="mono">${esc(e.model)}</td><td>${e.latency_ms} ms</td><td>${e.prompt_tokens ?? "?"}/${e.completion_tokens ?? "?"}</td><td>${esc(e.status)}${e.error ? " " + esc(e.error) : ""}</td><td><span class="badge${e.label === "FIXTURE" ? " warn" : ""}">${esc(e.label)}</span></td></tr>`).join("")}</table><p class="muted">Endpoint ${esc(run.inference_ledger[0].endpoint)}. Structured responses are in the evidence bundle.</p>` : '<p class="muted">no model calls yet</p>';
-  $("comparePanel").innerHTML = (run.comparison ? `<p class="muted">${esc(run.comparison.note)}; schema valid: ${run.comparison.schemaValid}</p><table><tr><th>field</th><th>discovery</th><th>replay</th><th></th></tr>${run.comparison.fields.map((f) => `<tr><td>${esc(f.field)}</td><td class="mono">${esc(JSON.stringify(f.discovery))}</td><td class="mono">${esc(JSON.stringify(f.replay))}</td><td>${f.match ? '<span class="tag">equal</span>' : '<span class="tag window">divergence for human review</span>'}</td></tr>`).join("")}</table>` : '<p class="muted">after Run C</p>') + (run.denied_errors?.length ? `<p class="muted">Denied paths, with the error the operating system actually returned</p>${pre(run.denied_errors)}` : "") + `<p class="muted">Discovery labels: ${(run.discovery_labels || []).map((l) => `<span class="tag">${esc(l)}</span>`).join("") || "none"}<br>Replay labels: ${(run.replay_labels || []).map((l) => `<span class="tag">${esc(l)}</span>`).join("") || "none"}</p>`;
-  $("bundlePanel").innerHTML = run.bundle_path && !cached ? `<p><a href="/api/runs/${run.id}/bundle.zip">Download evidence bundle (zip)</a>: probe, transcripts, labelled strace events, gateway log, compiled profile, contract, hashes, inference ledger.</p>` : '<p class="muted">available after Run C' + (cached ? " (not for the cached run)" : "") + "</p>";
+  $("comparePanel").innerHTML = (run.comparison ? `<p class="muted">${esc(run.comparison.note)}; schema valid ${run.comparison.schemaValid}</p><table><tr><th>field</th><th>discovery</th><th>replay</th><th></th></tr>${run.comparison.fields.map((f) => `<tr><td>${esc(f.field)}</td><td class="mono">${esc(JSON.stringify(f.discovery))}</td><td class="mono">${esc(JSON.stringify(f.replay))}</td><td>${f.match ? '<span class="tag">equal</span>' : '<span class="tag window">divergence for human review</span>'}</td></tr>`).join("")}</table>` : '<p class="muted">after Run C</p>') + (run.denied_errors?.length ? `<p class="muted">Denied paths, with the error the operating system actually returned</p>${pre(run.denied_errors)}` : "") + `<p class="muted">Discovery labels ${(run.discovery_labels || []).map((l) => `<span class="tag">${esc(l)}</span>`).join("") || "none"}<br>Replay labels ${(run.replay_labels || []).map((l) => `<span class="tag">${esc(l)}</span>`).join("") || "none"}</p>`;
+  $("bundlePanel").innerHTML = run.bundle_path && !cached ? `<p><a href="/api/runs/${run.id}/bundle.zip">Download evidence bundle (zip)</a>. Probe, transcripts, labelled strace events, gateway log, compiled profile, contract, hashes, inference ledger.</p>` : '<p class="muted">available after Run C' + (cached ? " (not for the cached run)" : "") + "</p>";
   const lc = run.runs?.C?.lifecycle || run.runs?.B?.lifecycle;
   if (lc) $("lifecycleLine").textContent = "Containers. " + lc.map((l) => l.slice(24)).join("; ");
 }
@@ -140,6 +142,6 @@ $("tool").onchange = () => { $("task").textContent = $("tool").value === "search
   }
   badges(); renderStats();
   const id = new URLSearchParams(location.search).get("run");
-  if (!id && meta?.cached_available) { try { const c = await api("/api/cached"); const keep = run; run = c; cached = true; renderStats(); run = keep; cached = false; } catch {} }
+  if (!id && meta?.cached_available) { try { run = await api("/api/cached"); cached = true; render(); $("status").textContent = "Idle. Showing the last recorded run, labelled cached. Press Run the loop for a live one."; } catch {} }
   if (id) { try { run = await api(`/api/runs/${id}`); render(); if (!["complete", "failed"].includes(run.status)) { $("run").disabled = true; subscribe(id); } } catch {} }
 })();
