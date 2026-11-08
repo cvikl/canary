@@ -15,26 +15,26 @@
     <p class="kicker">Vanta Point Labs, Vultr Agent Rush, Challenge 1, Blast Radius Zero</p>
     <h1>Canary Cage for MCP</h1>
     <p class="lede">An agent that writes and runs behavioural probes against MCP tools inside isolated Vultr sandboxes, discovers what each tool actually touches, and replays the identical probe under a human-approved least-privilege contract to prove the tool still works with less authority.</p>
-    <ol class="stages" id="stages">
+    <ol class="stages" id="stages" data-shot="stages">
       <li data-stage="inspecting">Inspect</li><li data-stage="probing">Probe</li><li data-stage="baseline">Baseline</li><li data-stage="discovering">Discover</li><li data-stage="awaiting_approval">Contract</li><li data-stage="compiling">Enforce</li><li data-stage="replaying">Replay</li>
     </ol>
   </div>
 </header>
 
 <main class="wrap">
-  <section class="controls card" id="controls">
+  <section class="controls card" id="controls" data-shot="controls">
     <div class="row">
       <label>Scenario <select id="scenario"><option value="repo-assistant">@canary-lab/repo-assistant (synthetic fixture)</option></select></label>
       <label>Tool <select id="tool"><option value="summarize_repository">summarize_repository</option><option value="search_documentation">search_documentation</option></select></label>
-      <button id="run" class="primary">Run the loop</button>
+      <button id="run" class="primary" data-shot="run">Run the loop</button>
       <button id="showCached" class="ghost" hidden>Show cached run</button>
     </div>
     <p class="task" id="task">Task. Summarise the repository at /workspace/repository as JSON with the chosen tool and check the result has content. Curated scenario, nothing arbitrary from the public.</p>
-    <p class="status" id="status">Idle. One sandbox run at a time. If someone else is running you will see your queue position.</p>
-    <div class="badges" id="badges"></div>
+    <p class="status" id="status" data-shot="status">Idle. One sandbox run at a time. If someone else is running you will see your queue position.</p>
+    <div class="badges" id="badges" data-shot="badges"></div>
   </section>
 
-  <section class="card" id="identity" hidden>
+  <section class="card" id="identity" hidden data-shot="identity">
     <details>
       <summary><span id="identityLabel" class="label">Replay identity</span></summary>
       <table class="kv" id="hashes"></table>
@@ -42,31 +42,31 @@
     <p class="contract-hash" id="contractHash"></p>
   </section>
 
-  <section class="card hero" id="hero" hidden>
+  <section class="card hero" id="hero" hidden data-shot="hero">
     <table class="hero-table">
       <thead><tr><th>Discovery (Run B)</th><th>Enforced replay (Run C)</th></tr></thead>
       <tbody id="heroBody"></tbody>
     </table>
-    <p class="explanation" id="explanation"></p>
+    <p class="explanation" id="explanation" data-shot="explanation"></p>
   </section>
 
-  <section class="card" id="contractCard" hidden>
+  <section class="card" id="contractCard" hidden data-shot="contract">
     <h2>Capability contract</h2>
     <p class="muted">Proposed by Vultr Serverless Inference from the declared job and the observed matrix. Edit if you wish, then approve. Nothing runs under the contract until a person clicks.</p>
     <div class="two">
-      <div><h3>Observed during the tool-call window</h3><table class="matrix" id="matrixWindow"></table></div>
-      <div><h3>Contract (JSON, closed schema)</h3><textarea id="contractText" rows="14" spellcheck="false"></textarea><p class="error" id="contractError"></p><button id="approve" class="primary">Approve contract and replay</button></div>
+      <div><h3>Observed during the tool-call window</h3><table class="matrix" id="matrixWindow" data-shot="matrix"></table></div>
+      <div><h3>Contract (JSON, closed schema)</h3><textarea id="contractText" rows="14" spellcheck="false" data-shot="contractText"></textarea><p class="error" id="contractError"></p><button id="approve" class="primary" data-shot="approve">Approve contract and replay</button></div>
     </div>
   </section>
 
   <section class="panels" id="panels" hidden>
-    <details class="card"><summary>Probe written by the model</summary><div id="probePanel"></div></details>
+    <details class="card" id="probeDetails" data-shot="probe"><summary>Probe written by the model</summary><div id="probePanel"></div></details>
     <details class="card"><summary>MCP messages</summary><div id="mcpPanel"></div></details>
-    <details class="card"><summary>Labelled strace events</summary><div id="stracePanel"></div></details>
+    <details class="card" id="straceDetails" data-shot="strace"><summary>Labelled strace events</summary><div id="stracePanel"></div></details>
     <details class="card"><summary>Compiled Docker profile</summary><div id="profilePanel"></div></details>
-    <details class="card"><summary>Vultr inference log</summary><div id="ledgerPanel"></div></details>
-    <details class="card"><summary>Output comparison and denied paths</summary><div id="comparePanel"></div></details>
-    <details class="card"><summary>Evidence bundle</summary><div id="bundlePanel"></div></details>
+    <details class="card" id="ledgerDetails" data-shot="ledger"><summary>Vultr inference log</summary><div id="ledgerPanel"></div></details>
+    <details class="card" id="compareDetails" data-shot="compare"><summary>Output comparison and denied paths</summary><div id="comparePanel"></div></details>
+    <details class="card" id="bundleDetails" data-shot="bundle"><summary>Evidence bundle</summary><div id="bundlePanel"></div></details>
   </section>
 
   <section class="card limits">
@@ -75,8 +75,8 @@
   </section>
 </main>
 
-<footer class="wrap foot">
-  <p id="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
+<footer class="wrap foot" data-shot="footer">
+  <p id="vmLine" data-shot="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
   <p id="lifecycleLine">Containers. Each run gets a fresh container that is destroyed on every exit path.</p>
   <p>Every model call goes to Vultr Serverless Inference and is listed in the inference log. Team: Timotej Cvikl, Bernard Liu, Jeremy Sosabowski (advisor). MIT licence.</p>
 </footer>
