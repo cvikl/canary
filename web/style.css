@@ -303,3 +303,15 @@ pre { background: var(--wash); color: var(--ink); border: 1px solid var(--rule);
 .explanation b { color: var(--ink); font-weight: 600; }
 .explanation.clamped { display: block; -webkit-line-clamp: unset; overflow: visible; cursor: default; }
 .explanation.clamped::after { content: ""; }
+
+/* running on Vultr */
+.vtiles { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.vtile { border-top: 3px solid var(--ink); padding-top: 20px; }
+.vtile-k { font: 500 14px/1 var(--mono); color: var(--ink-3); margin-bottom: 12px; }
+.vtile-v { font: 600 clamp(28px, 3vw, 40px)/1.1 var(--display); letter-spacing: -.01em; margin-bottom: 18px; }
+.vkv { margin: 0; display: grid; gap: 0; }
+.vkv > div { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 10px 0; border-top: 1px solid var(--rule-2); font-size: 15px; }
+.vkv dt { color: var(--ink-3); } .vkv dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.vkv dd.mono { font: 500 13.5px var(--mono); color: var(--ink); }
+@media (max-width: 1000px) { .vtiles { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .vkv > div { grid-template-columns: 1fr; gap: 2px; } }

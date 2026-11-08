@@ -22,6 +22,7 @@
     </a>
     <nav class="topnav" aria-label="Page">
       <a href="#record">Record</a>
+      <a href="#vultr">Vultr</a>
       <a href="#problem">Problem</a>
       <a href="#how">How it works</a>
       <a href="#team">Team</a>
@@ -116,6 +117,37 @@
         <p class="chart-legend"><span class="lg tall"></span>tool-attributed event <span class="lg short"></span>platform noise <span class="lg hollow"></span>refused by the kernel <span class="lg band"></span>tool-call window</p>
         <details class="chart-table"><summary>Table view</summary><div id="timelineTable"></div></details>
       </figure>
+    </div>
+  </section>
+
+  <section class="onvultr" id="vultr">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Running on Vultr</h2>
+        <p class="sub">Both required services, doing the work. Values below are read live from this server.</p>
+      </div>
+      <div class="vtiles">
+        <div class="vtile">
+          <div class="vtile-k">Live on Vultr Cloud Compute</div>
+          <div class="vtile-v" id="vmRegion">region pending</div>
+          <dl class="vkv">
+            <div><dt>instance id</dt><dd id="vmInstance" class="mono">pending</dd></div>
+            <div><dt>hostname</dt><dd id="vmHost" class="mono">pending</dd></div>
+            <div><dt>runs on this VM</dt><dd>orchestrator under systemd, every sandbox container, the recording gateway, this page</dd></div>
+            <div><dt>source</dt><dd>Vultr metadata service, 169.254.169.254, read by the host at start</dd></div>
+          </dl>
+        </div>
+        <div class="vtile">
+          <div class="vtile-k">Model calls on Vultr Serverless Inference</div>
+          <div class="vtile-v" id="infModel">model pending</div>
+          <dl class="vkv">
+            <div><dt>endpoint</dt><dd id="infEndpoint" class="mono">pending</dd></div>
+            <div><dt>calls in the run shown</dt><dd id="infCalls">pending</dd></div>
+            <div><dt>budget left today</dt><dd id="infBudget">pending</dd></div>
+            <div><dt>no other provider</dt><dd>probe synthesis, optional repair, contract proposal and explanation all go here; nothing else is in the code path</dd></div>
+          </dl>
+        </div>
+      </div>
     </div>
   </section>
 

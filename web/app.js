@@ -144,7 +144,18 @@ function renderTimeline() {
   $("timelineSvg").innerHTML = svg;
   $("timelineTable").innerHTML = `<table><tr><th>run</th><th>ms</th><th>syscall</th><th>target</th><th>result</th><th>label</th></tr>${rows.join("")}</table>`;
 }
-function render() { if (!run) return; setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); renderStats(); renderTimeline(); }
+function renderVultr() {
+  if (meta) {
+    $("vmRegion").textContent = meta.vm ? `Region ${meta.vm.region}, Amsterdam` : "metadata not reachable from this host";
+    $("vmInstance").textContent = meta.vm?.instance_id || "n/a";
+    $("vmHost").textContent = meta.vm?.hostname || "n/a";
+    $("infModel").textContent = meta.model;
+    $("infEndpoint").textContent = meta.inference_endpoint;
+    $("infBudget").textContent = `${meta.budget_remaining} of ${meta.daily_budget} calls`;
+  }
+  if (run?.inference_ledger?.length) { const l = run.inference_ledger; const ms = l.reduce((a, e) => a + (e.latency_ms || 0), 0); $("infCalls").textContent = `${l.length} (${l.map((e) => e.purpose).join(", ")}), ${(ms / 1000).toFixed(1)} s of model time, label ${l[0].label}`; }
+}
+function render() { if (!run) return; renderVultr(); setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); renderStats(); renderTimeline(); }
 
 async function refresh() { if (!run || cached) return; run = await api(`/api/runs/${run.id}`); render(); }
 function subscribe(id) {
@@ -187,7 +198,7 @@ $("tool").onchange = () => { $("task").textContent = $("tool").value === "search
     if (meta.cached_available) $("showCached").hidden = false;
     if (!meta.docker) $("status").textContent = "Sandbox host unhealthy. A cached run is available if one was recorded.";
   }
-  badges(); renderStats();
+  badges(); renderStats(); renderVultr();
   const id = new URLSearchParams(location.search).get("run");
   if (!id && meta?.cached_available) { try { run = await api("/api/cached"); cached = true; render(); $("status").textContent = "Idle. Showing the last recorded run, labelled cached. Press Run the loop for a live one."; } catch {} }
   if (id) { try { run = await api(`/api/runs/${id}`); render(); if (!["complete", "failed"].includes(run.status)) { $("run").disabled = true; subscribe(id); } } catch {} }
