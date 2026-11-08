@@ -33,8 +33,17 @@
 
 <main>
   <section class="hero">
+    <svg class="cage" viewBox="0 0 1200 560" aria-hidden="true" preserveAspectRatio="xMaxYMid slice">
+      <g class="bars">
+        <line x1="720" y1="0" x2="720" y2="560"/><line x1="780" y1="0" x2="780" y2="560"/><line x1="840" y1="0" x2="840" y2="560"/><line x1="900" y1="0" x2="900" y2="560"/><line x1="960" y1="0" x2="960" y2="560"/><line x1="1020" y1="0" x2="1020" y2="560"/><line x1="1080" y1="0" x2="1080" y2="560"/><line x1="1140" y1="0" x2="1140" y2="560"/>
+        <line x1="700" y1="120" x2="1200" y2="120"/><line x1="700" y1="440" x2="1200" y2="440"/>
+      </g>
+      <circle class="bird" cx="930" cy="300" r="9"/>
+      <line class="perch" x1="860" y1="318" x2="1000" y2="318"/>
+    </svg>
     <div class="wrap hero-grid">
       <div class="hero-copy">
+        <p class="hero-kicker">Vultr Agent Rush · Blast Radius Zero · Vanta Point Labs</p>
         <h1>The tool returned the right answer.<br><span class="hero-red">It also read the SSH key.</span></h1>
         <p class="lede">An MCP schema says how to call a tool, not what it touches. Canary Cage writes a probe, runs it in an isolated sandbox on Vultr, records what the tool did, and replays the same probe under a contract a person approved.</p>
         <p class="lede-2">Same tool, same input, less authority. The record below is a real run on this server.</p>
@@ -266,6 +275,7 @@
 </main>
 
 <footer class="foot" data-shot="footer"><div class="wrap">
+  <p class="foot-mark">Canary Cage <em>for MCP</em></p>
   <p id="vmLine" data-shot="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
   <p id="lifecycleLine">Containers. Each run gets a fresh container that is destroyed on every exit path.</p>
   <p>Vanta Point Labs. Timotej Cvikl, Bernard Liu, Jeremy Wong (advisor). MIT licence. The fixture is synthetic; FIXTURE and cached states are labelled.</p>
