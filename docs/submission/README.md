@@ -4,4 +4,3 @@
 - `slides.pdf`, ten slides.
 - `cover.png`, the 16:9 cover image.
 - `narration.txt`, the nine narration blocks.
-- `shot-run.mjs`, the headless capture script that drove the real run shown in the film.
