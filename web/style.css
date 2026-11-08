@@ -264,7 +264,8 @@ pre { background: var(--wash); color: var(--ink); border: 1px solid var(--rule);
 .problem-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(320px, 5fr); gap: 64px; align-items: start; }
 .problem-text { color: var(--ink-2); max-width: 62ch; font-size: 17px; margin-top: 18px; line-height: 1.6; }
 .photo { margin: 0; }
-.photo img { width: 100%; height: auto; display: block; border-radius: 4px; aspect-ratio: 3 / 2; object-fit: cover; }
+.photo img { width: 100%; height: auto; display: block; border-radius: 4px; }
+.problem-grid .photo img { aspect-ratio: 3 / 2; object-fit: cover; }
 .photo figcaption { font-size: 13px; color: var(--ink-3); margin-top: 8px; }
 .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--rule); }
 .bars { margin: 0; }
