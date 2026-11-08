@@ -30,6 +30,7 @@ function renderHero() {
   if ($("heroBody").dataset.key !== heroKey) { $("heroBody").dataset.key = heroKey; $("heroBody").innerHTML = run.hero.map((r) => `<tr class="${esc(r.state)}${/observed|attempted|exceeded/.test(r.discovery) && !/not observed/.test(r.discovery) ? " observed" : ""}"><td>${esc(r.discovery)}</td><td>${esc(r.replay)}</td></tr>`).join(""); }
   const fullStop = (t) => { const i = t.lastIndexOf("."); return i > 40 ? t.slice(0, i + 1) : t; };
   $("explanation").innerHTML = run.explanation ? `${esc(fullStop(run.explanation.text))} <span class="badge${run.explanation.label === "FIXTURE" ? " warn" : ""}">explanation ${esc(run.explanation.label)}</span>` : "";
+  if (run.explanation && !$("explanation").dataset.bound) { $("explanation").dataset.bound = "1"; $("explanation").classList.add("clamped"); $("explanation").onclick = () => $("explanation").classList.toggle("clamped"); }
 }
 function renderIdentity() {
   const h = run?.hashes; if (!h?.probe) { $("identity").hidden = true; return; }
@@ -53,7 +54,8 @@ function renderContract() {
   if (!$("contractText").dataset.filled || $("contractText").dataset.run !== run.id) { $("contractText").value = current ? JSON.stringify(current, null, 2) : JSON.stringify({ tool: run.tool, allowed_read_paths: ["/workspace/repository/**"], allowed_write_paths: ["/output/**"], denied_paths: [], network_egress: "none", observed_process_contract: ["node"], max_runtime_seconds: 20, max_memory_mb: 256 }, null, 2); $("contractText").dataset.filled = "1"; $("contractText").dataset.run = run.id; }
   $("contractText").readOnly = !editable;
   $("approve").hidden = !editable;
-  $("contractError").textContent = run.contract.proposal_errors?.length ? "Proposal rejected by the schema, " + run.contract.proposal_errors.join("; ") + ". Edit the default below." : run.contract.approved ? `Approved by ${run.contract.approved_by} at ${run.contract.approved_at}` : "";
+  $("contractError").textContent = run.contract.proposal_errors?.length ? "Proposal rejected by the schema, " + run.contract.proposal_errors.join("; ") + ". Edit the default below." : run.contract.approved ? `Approved by ${run.contract.approved_by}, ${new Date(run.contract.approved_at).toUTCString()}` : "";
+  $("contractError").classList.toggle("note", !!run.contract.approved && !run.contract.proposal_errors?.length);
 }
 function pre(obj) { return `<pre>${esc(typeof obj === "string" ? obj : JSON.stringify(obj, null, 2))}</pre>`; }
 function tabs(container, items, render) {
@@ -65,7 +67,7 @@ function tabs(container, items, render) {
 function renderStats() {
   const set = (id, v, cls) => { const el = $(id); el.textContent = v; el.className = (v === "pending" ? "pending " : "") + (cls || ""); };
   const src = run && (run.runs?.B || run.status === "complete") ? run : null;
-  if (!src) { $("statsNote").textContent = meta?.cached_available ? "Numbers come from the run above once it exists, or from the last recorded run (press Show the last recorded run)." : "Numbers appear from the run above."; return; }
+  if (!src) { $("statsNote").textContent = ""; return; }
   const B = src.runs?.B, C = src.runs?.C;
   const first = src.runs?.inspect?.started_at ? new Date(src.runs.inspect.started_at).getTime() : null;
   const last = C?.ended_at ? new Date(C.ended_at).getTime() : B?.ended_at ? new Date(B.ended_at).getTime() : null;
@@ -76,7 +78,7 @@ function renderStats() {
   set("statContainers", String(Object.values(src.runs || {}).filter(Boolean).length));
   const denied = (src.denied_errors || []).filter((d) => d.errno).length;
   set("statDenied", C ? String(denied) : "pending", C && denied ? "green" : "");
-  $("statsNote").textContent = `${cached ? "From the last recorded run" : "From this run"}, id ${src.id.slice(0, 8)}, ${src.probe.label === "FIXTURE" ? "FIXTURE probe" : "live model " + (src.inference_ledger?.[0]?.model || "")}, tracer ${B?.tracer?.attached ? "attached" : "not attached"}.`;
+  $("statsNote").textContent = `${cached ? "Last recorded run" : "This run"} ${src.id.slice(0, 8)}, ${src.probe.label === "FIXTURE" ? "FIXTURE probe" : (src.inference_ledger?.[0]?.model || "live model")}, tracer ${B?.tracer?.attached ? "attached" : "not attached"}.`;
 }
 function renderPanels() {
   if (!run) { $("panels").hidden = true; $("panelsEmpty").hidden = false; return; }

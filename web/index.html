@@ -23,18 +23,16 @@
     <nav class="topnav" aria-label="Page">
       <a href="#record">Record</a>
       <a href="#how">How it works</a>
-      <a href="#evidence">Evidence</a>
       <a href="#limits">Limits</a>
       <a href="https://github.com/cvikl/canary" rel="noopener">GitHub</a>
     </nav>
-    <span class="top-meta">Vultr Agent Rush · Blast Radius Zero</span>
   </div>
 </header>
 
 <main class="wrap">
   <section class="hero">
     <h1>The tool returned the right answer.<br><span class="hero-red">It also read the SSH key.</span></h1>
-    <p class="lede">An MCP schema says how to call a tool, not what it touches. Canary Cage is an agent that writes a probe, runs it in an isolated sandbox on Vultr, records what the tool actually did, and replays the identical probe under a contract a person approved. Same tool, same input, less authority.</p>
+    <p class="lede">An MCP schema says how to call a tool, not what it touches. Canary Cage writes a probe, runs it in an isolated sandbox on Vultr, records what the tool did, and replays the same probe under a contract a person approved.</p>
 
     <form class="console" id="controls" data-shot="controls" onsubmit="return false">
       <div class="field">
@@ -47,21 +45,21 @@
       </div>
       <div class="actions">
         <button id="run" class="btn primary" type="button" data-shot="run">Run the loop</button>
-        <button id="showCached" class="btn" type="button" hidden>Show the last recorded run</button>
+        <button id="showCached" class="btn quiet" type="button" hidden>Show the last recorded run</button>
       </div>
-      <p class="task" id="task">Task. Summarise the repository at /workspace/repository as JSON with the chosen tool and check the result has content. Curated scenario, nothing arbitrary from the public.</p>
-      <p class="status" id="status" data-shot="status" aria-live="polite">Idle. One sandbox run at a time. A second visitor sees a queue position, never an error.</p>
+      <p class="task" id="task">Task. Summarise /workspace/repository as JSON and check the result has content. Curated scenario only.</p>
+      <p class="status" id="status" data-shot="status" aria-live="polite">Idle. One sandbox run at a time; a second visitor sees a queue position.</p>
       <div class="badges" id="badges" data-shot="badges"></div>
     </form>
 
     <ol class="rail" id="stages" data-shot="stages" aria-label="Stages">
-      <li data-stage="inspecting"><b>Inspect</b><span>live tools/list</span></li>
-      <li data-stage="probing"><b>Probe</b><span>model writes, validator decides</span></li>
-      <li data-stage="baseline"><b>Baseline</b><span>run A, no tool call</span></li>
-      <li data-stage="discovering"><b>Discover</b><span>run B, strace and gateway</span></li>
-      <li data-stage="awaiting_approval"><b>Contract</b><span>proposed, human approves</span></li>
-      <li data-stage="compiling"><b>Enforce</b><span>deterministic compiler</span></li>
-      <li data-stage="replaying"><b>Replay</b><span>run C, same probe by hash</span></li>
+      <li data-stage="inspecting"><b>Inspect</b></li>
+      <li data-stage="probing"><b>Probe</b></li>
+      <li data-stage="baseline"><b>Baseline</b></li>
+      <li data-stage="discovering"><b>Discover</b></li>
+      <li data-stage="awaiting_approval"><b>Contract</b></li>
+      <li data-stage="compiling"><b>Enforce</b></li>
+      <li data-stage="replaying"><b>Replay</b></li>
     </ol>
   </section>
 
@@ -90,12 +88,12 @@
       <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
       <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
     </dl>
-    <p class="stats-note" id="statsNote">Numbers appear from the run above, or from the last recorded run.</p>
+    <p class="stats-note" id="statsNote"></p>
   </section>
 
   <section class="contract" id="contractCard" hidden data-shot="contract">
     <h2>Capability contract</h2>
-    <p class="sub">Proposed by Vultr Serverless Inference from the declared job and the observed matrix. Edit if you wish, then approve. Nothing runs under the contract until a person clicks.</p>
+    <p class="sub">Proposed by Vultr Serverless Inference from the declared job and what was observed. Edit if you wish, then approve.</p>
     <div class="two">
       <div>
         <h3>Observed during the tool-call window</h3>
@@ -112,7 +110,7 @@
 
   <section class="register" id="evidence">
     <h2>Evidence</h2>
-    <p class="sub">Everything the verdict rests on, as the host recorded it. Server stderr is kept but marked untrusted. Labels are exact strings from deterministic code.</p>
+    <p class="sub">What the verdict rests on, as the host recorded it.</p>
     <div id="panels" hidden>
       <details id="probeDetails" data-shot="probe"><summary>Probe written by the model<span class="hint">source, validator result, baseline derivation</span></summary><div id="probePanel"></div></details>
       <details id="mcpDetails"><summary>MCP messages<span class="hint">JSON-RPC transcript per run</span></summary><div id="mcpPanel"></div></details>
@@ -127,22 +125,19 @@
 
   <section class="how" id="how">
     <h2>How it works</h2>
-    <p class="sub">The model writes and proposes. Deterministic code validates, runs, enforces and decides.</p>
+    <p class="sub">The model writes and proposes. Code validates, runs, enforces and decides.</p>
     <ol class="steps">
-      <li><b>Inspect.</b> A fresh container answers initialize and tools/list. The live schema is stored, the container destroyed.</li>
-      <li><b>Probe.</b> Vultr Serverless Inference writes a short program against a four-function harness. An AST validator accepts or rejects it, one repair round. The accepted probe is hashed and frozen.</li>
-      <li><b>Baseline, run A.</b> The same probe minus its tool call, derived by a deterministic transform. Fresh container, strace attached from the host.</li>
-      <li><b>Discover, run B.</b> The full probe on a private network whose only exit is our recording gateway. strace, DNS and gateway logs. The tools/call send and result mark the window.</li>
-      <li><b>Attribute.</b> Every syscall gets one of five labels, including attribution uncertain. Baseline subtraction is useful, not proof.</li>
-      <li><b>Contract.</b> The model proposes the narrowest contract that fits the job and the matrix. Closed schema. A person edits or approves.</li>
-      <li><b>Enforce.</b> A deterministic compiler turns the contract into a Docker profile. Denied planted files are permission-masked, denied trees shadowed, network none.</li>
-      <li><b>Replay, run C.</b> Identical probe by hash, identical fixture by digest, identical image. Bait still planted. The real OS error is recorded. Output compared field by field.</li>
-      <li><b>Explain and bundle.</b> The model writes prose beside the verdict and cannot change a label. Everything is zipped.</li>
+      <li><b>Inspect.</b> A fresh container answers tools/list. The live schema is stored, the container destroyed.</li>
+      <li><b>Probe.</b> Vultr Serverless Inference writes a short program against a four-function harness. An AST validator accepts or rejects it. The probe is hashed and frozen.</li>
+      <li><b>Baseline, run A.</b> The same probe minus its tool call. Fresh container, strace attached from the host.</li>
+      <li><b>Discover, run B.</b> The full probe on a private network whose only exit is our recording gateway.</li>
+      <li><b>Attribute.</b> Every syscall gets one of five labels, including attribution uncertain.</li>
+      <li><b>Contract.</b> The model proposes the narrowest contract. A person edits or approves.</li>
+      <li><b>Enforce.</b> A deterministic compiler turns the contract into a Docker profile. Network none, denied files masked.</li>
+      <li><b>Replay, run C.</b> Identical probe by hash, identical fixture. The real OS error is recorded. Output compared field by field.</li>
+      <li><b>Explain and bundle.</b> The model writes prose beside the verdict and cannot change a label.</li>
     </ol>
-    <div class="vultr">
-      <div><h3>Vultr Cloud Compute</h3><p>The whole backend. Orchestrator under systemd on the VM host, Docker on the same VM for every sandbox and the gateway, strace from the host. This page is served from that VM.</p></div>
-      <div><h3>Vultr Serverless Inference</h3><p>Every model call. Probe synthesis, optional repair, contract proposal, explanation. No other provider anywhere in the code path. Each call is listed above with model, latency and tokens.</p></div>
-    </div>
+    <p class="vultr">One Vultr Cloud Compute VM runs the orchestrator, every sandbox, the gateway and this page. Every model call goes to Vultr Serverless Inference and is listed in the inference log with model, latency and tokens.</p>
   </section>
 
   <section class="limits" id="limits">
@@ -173,7 +168,7 @@
 <footer class="wrap foot" data-shot="footer">
   <p id="vmLine" data-shot="vmLine">Backend is a Vultr Cloud Compute VM. Metadata pending.</p>
   <p id="lifecycleLine">Containers. Each run gets a fresh container that is destroyed on every exit path.</p>
-  <p>Vanta Point Labs. Timotej Cvikl, Bernard Liu, Jeremy Sosabowski (advisor). MIT licence. The fixture is synthetic and every FIXTURE or cached state is labelled on screen.</p>
+  <p>Vanta Point Labs. Timotej Cvikl, Bernard Liu, Jeremy Sosabowski (advisor). MIT licence. The fixture is synthetic; FIXTURE and cached states are labelled.</p>
 </footer>
 <script src="app.js"></script>
 </body>
