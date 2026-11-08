@@ -94,7 +94,7 @@ function renderStats() {
   set("statContainers", String(Object.values(src.runs || {}).filter(Boolean).length));
   const denied = (src.denied_errors || []).filter((d) => d.errno).length;
   set("statDenied", C ? String(denied) : "pending", C && denied ? "green" : "");
-  $("statsNote").textContent = `${cached ? "Last recorded run" : "This run"} ${src.id.slice(0, 8)}, ${src.probe.label === "FIXTURE" ? "FIXTURE probe" : (src.inference_ledger?.[0]?.model || "live model")}, tracer ${B?.tracer?.attached ? "attached" : "not attached"}.`;
+  $("statsNote").textContent = `${cached ? "last recorded run" : "this run"} ${src.id.slice(0, 8)} · ${src.probe.label === "FIXTURE" ? "FIXTURE probe" : (src.inference_ledger?.[0]?.model || "live model")} · strace ${B?.tracer?.attached ? "attached" : "not attached"}`;
 }
 function renderPanels() {
   if (!run) { $("panels").hidden = true; $("panelsEmpty").hidden = false; return; }
@@ -114,7 +114,7 @@ function renderPanels() {
   $("comparePanel").innerHTML = (run.comparison ? `<p class="muted">${esc(run.comparison.note)}; schema valid ${run.comparison.schemaValid}</p><table><tr><th>field</th><th>discovery</th><th>replay</th><th></th></tr>${run.comparison.fields.map((f) => `<tr><td>${esc(f.field)}</td><td class="mono">${esc(JSON.stringify(f.discovery))}</td><td class="mono">${esc(JSON.stringify(f.replay))}</td><td>${f.match ? '<span class="tag">equal</span>' : '<span class="tag window">divergence for human review</span>'}</td></tr>`).join("")}</table>` : '<p class="muted">after Run C</p>') + (run.denied_errors?.length ? `<p class="muted">Denied paths, with the error the operating system actually returned</p>${pre(run.denied_errors)}` : "") + `<p class="muted">Discovery labels ${(run.discovery_labels || []).map((l) => `<span class="tag">${esc(l)}</span>`).join("") || "none"}<br>Replay labels ${(run.replay_labels || []).map((l) => `<span class="tag">${esc(l)}</span>`).join("") || "none"}</p>`;
   $("bundlePanel").innerHTML = run.bundle_path && !cached ? `<p><a href="/api/runs/${run.id}/bundle.zip">Download evidence bundle (zip)</a>. Probe, transcripts, labelled strace events, gateway log, compiled profile, contract, hashes, inference ledger.</p>` : '<p class="muted">available after Run C' + (cached ? " (not for the cached run)" : "") + "</p>";
   const lc = run.runs?.C?.lifecycle || run.runs?.B?.lifecycle;
-  if (lc) $("lifecycleLine").textContent = "Containers. " + lc.map((l) => l.slice(24)).join("; ");
+  if (lc && $("lifecycleLine")) $("lifecycleLine").textContent = "Containers. " + lc.map((l) => l.slice(24)).join("; ");
 }
 function renderTimeline() {
   const lanes = ["B", "C"].map((k) => ({ k, r: run?.runs?.[k] })).filter((l) => l.r && l.r.strace_events?.length);
@@ -148,15 +148,15 @@ function renderTimeline() {
   $("timelineTable").innerHTML = `<table><tr><th>run</th><th>ms</th><th>syscall</th><th>target</th><th>result</th><th>label</th></tr>${rows.join("")}</table>`;
 }
 function renderVultr() {
+  const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   if (meta) {
-    $("vmRegion").textContent = meta.vm ? `Region ${meta.vm.region}, Amsterdam` : "metadata not reachable from this host";
-    $("vmInstance").textContent = meta.vm?.instance_id || "n/a";
-    $("vmHost").textContent = meta.vm?.hostname || "n/a";
-    $("infModel").textContent = meta.model;
-    $("infEndpoint").textContent = meta.inference_endpoint;
-
+    set("vmRegion", meta.vm ? `Region ${meta.vm.region}, Amsterdam` : "metadata not reachable from this host");
+    set("vmInstance", meta.vm?.instance_id ? `instance ${meta.vm.instance_id}` : "instance id not available on this host");
+    set("vmHost", meta.vm?.hostname || "n/a");
+    set("infModel", meta.model);
+    set("infEndpoint", meta.inference_endpoint);
   }
-  if (run?.inference_ledger?.length) { const l = run.inference_ledger; const ms = l.reduce((a, e) => a + (e.latency_ms || 0), 0); $("infCalls").textContent = `${l.length} (${l.map((e) => e.purpose).join(", ")}), ${(ms / 1000).toFixed(1)} s of model time, label ${l[0].label}`; }
+  if (run?.inference_ledger?.length) { const l = run.inference_ledger; const ms = l.reduce((a, e) => a + (e.latency_ms || 0), 0); set("infCalls", `${l.length} calls, ${(ms / 1000).toFixed(1)} s of model time`); }
 }
 function render() { if (!run) return; renderVultr(); setStages(run.status); badges(); renderIdentity(); renderHero(); renderContract(); renderPanels(); renderStats(); renderTimeline(); }
 
@@ -197,7 +197,7 @@ $("tool").onchange = () => { $("task").textContent = $("tool").value === "search
 (async () => {
   try { meta = await api("/api/meta"); } catch { meta = null; }
   if (meta) {
-    $("vmLine").textContent = meta.vm ? `Served from a Vultr Cloud Compute VM, region ${meta.vm.region}, instance ${meta.vm.instance_id}, read from the Vultr metadata service. Inference endpoint ${meta.inference_endpoint}, model ${meta.model}. Budget left today ${meta.budget_remaining} of ${meta.daily_budget} calls.` : `Vultr metadata not reachable from this host (development machine). Inference endpoint ${meta.inference_endpoint}, model ${meta.model}.`;
+    if ($("vmLine")) $("vmLine").textContent = meta.vm ? `Served from a Vultr Cloud Compute VM, region ${meta.vm.region}, instance ${meta.vm.instance_id}, read from the Vultr metadata service. Inference endpoint ${meta.inference_endpoint}, model ${meta.model}. Budget left today ${meta.budget_remaining} of ${meta.daily_budget} calls.` : `Vultr metadata not reachable from this host (development machine). Inference endpoint ${meta.inference_endpoint}, model ${meta.model}.`;
     if (meta.cached_available) $("showCached").hidden = false;
     if (!meta.docker) $("status").textContent = "Sandbox host unhealthy. A cached run is available if one was recorded.";
   }
@@ -205,4 +205,28 @@ $("tool").onchange = () => { $("task").textContent = $("tool").value === "search
   const id = new URLSearchParams(location.search).get("run");
   if (!id && meta?.cached_available) { try { run = await api("/api/cached"); cached = true; render(); $("status").textContent = "Idle. Showing the last recorded run, labelled cached. Press Run the loop for a live one."; } catch {} }
   if (id) { try { run = await api(`/api/runs/${id}`); render(); if (!["complete", "failed"].includes(run.status)) { $("run").disabled = true; subscribe(id); } } catch {} }
+})();
+
+
+// Cycling verb on the hero panel. One word per 1.75 s slot; the panel's layer follows the word.
+(() => {
+  const words = ["Probe", "Observe", "Contract", "Replay"];
+  const el = $("cycleWord"), panel = document.getElementById("top");
+  if (!el || !panel) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let i = 0;
+  panel.dataset.w = "0";
+  if (reduced) return;
+  const step = () => {
+    if (document.hidden) return;
+    el.classList.add("leave");
+    setTimeout(() => {
+      i = (i + 1) % words.length;
+      el.textContent = words[i];
+      panel.dataset.w = String(i);
+      el.classList.remove("leave"); el.classList.add("enter");
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.classList.remove("enter"); el.classList.add("in"); }));
+    }, 430);
+  };
+  setInterval(step, 1750);
 })();
