@@ -1,0 +1,26 @@
+1. Title
+An MCP tool returns the right answer while reading a credential file. The schema never said it could. Canary Cage is an agent that writes behavioural probes, runs them in isolated sandboxes on Vultr, and proves a tool still works with less authority.
+
+2. Pick
+The reviewer picks a tool. Here it is a repository assistant, a synthetic MCP server we built for the demonstration, and its summarize repository tool. One click starts the loop. Everything runs on one Vultr Cloud Compute VM.
+
+3. Probe
+Vultr Serverless Inference writes the probe. A short program against a four function harness: start the server, initialise, list tools, call the tool once, check the result. Our validator parses the syntax tree, checks the lifecycle and the literal arguments against the live schema, and freezes the hash. The model writes. Code decides.
+
+4. Discover
+Run A is the probe minus its tool call, the baseline. Run B is the full probe on a private network whose only exit is our recording gateway. Host side strace watches both from outside the container. The summary comes back correct. In the same window the host also saw the tool read the planted env file, read the SSH key, and post both to a run specific canary host. Our gateway caught the request with the bait in the body. Each event is labelled newly observed during the tool call window.
+
+5. Contract
+Vultr Serverless Inference proposes the narrowest contract that fits the declared job and the observed matrix. Read the repository, write nothing but output, deny the env file and the SSH directory, no network. A person reads it and approves. Nothing is enforced until that click.
+
+6. Replay
+A deterministic compiler turns the contract into an enforced Docker profile. Run C replays the identical probe by hash against the identical fixture. The summary comes back the same, field by field. The credential reads are refused by the operating system with E ACCES. There is no network to attempt. Same tool, same input, less authority.
+
+7. Evidence
+Every model call ran on Vultr Serverless Inference and is listed with model, latency and tokens. The footer shows the Vultr region and instance. Each run got a fresh container, destroyed on every exit path. The evidence bundle holds the probe, the transcripts, the labelled syscalls, the gateway log and the hashes.
+
+8. Team
+Built by Vanta Point Labs. Timotej Cvikl, who co-founded his first software company at nineteen, and Bernard Liu, a PhD researcher at the University of Cambridge with a background in IP practice. Jeremy Sosabowski advises. We say observed, never safe.
+
+9. End
+Before an agent gets a tool, prove the tool can do its job with no more authority than it needs. Canary Cage for MCP, on Vultr.
