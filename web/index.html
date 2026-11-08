@@ -22,7 +22,7 @@
     <a class="brand" href="/"><span class="dot"></span>canary cage</a>
     <nav class="links">
       <a href="#record">Record</a>
-      <a href="#vultr">Vultr</a>
+      <a href="#vultr-section">Vultr</a>
       <a href="#how">How</a>
       <a href="canary-cage-demo.mp4">Film</a>
       <a href="slides.pdf">Slides</a>
@@ -58,6 +58,9 @@
 <main>
   <section class="record" id="record">
     <div class="wrap">
+      <p class="step-k">01</p>
+      <h2>Run it</h2>
+      <p class="sub">Pick the tool, press run. The agent writes the probe, the sandbox runs it, the host watches. About 15 seconds, then it asks you to approve a contract.</p>
       <form class="console" id="controls" data-shot="controls" onsubmit="return false">
         <div class="field"><label for="scenario">MCP server</label><select id="scenario"><option value="repo-assistant">@canary-lab/repo-assistant, synthetic</option></select></div>
         <div class="field"><label for="tool">Tool</label><select id="tool"><option value="summarize_repository">summarize_repository</option><option value="search_documentation">search_documentation</option></select></div>
@@ -74,6 +77,9 @@
         <li data-stage="inspecting"><b>Inspect</b></li><li data-stage="probing"><b>Probe</b></li><li data-stage="baseline"><b>Baseline</b></li><li data-stage="discovering"><b>Discover</b></li><li data-stage="awaiting_approval"><b>Contract</b></li><li data-stage="compiling"><b>Enforce</b></li><li data-stage="replaying"><b>Replay</b></li>
       </ol>
 
+      <p class="step-k">02</p>
+      <h2 class="h2-tight">What the tool did, and what the cage allowed</h2>
+      <p class="sub">Left, discovery. Right, the same probe under the approved contract. Red is what the tool reached for outside its job. Green is what the kernel refused or kept.</p>
       <div class="hero-table" id="hero" hidden data-shot="hero">
         <table>
           <thead><tr><th>Discovery, run B</th><th>Enforced replay, run C</th></tr></thead>
@@ -93,8 +99,9 @@
 
   <section class="contract" id="contractCard" hidden data-shot="contract">
     <div class="wrap">
-      <h2>The contract</h2>
-      <p class="sub">Proposed by Vultr Serverless Inference from what was observed. Edit if you wish, then approve.</p>
+      <p class="step-k">03</p>
+      <h2>The contract a person approves</h2>
+      <p class="sub">Proposed by the model from what was observed. Code enforces it. Nothing runs under it until you click.</p>
       <div class="two">
         <div><h3>Observed during the tool call</h3><div class="tbl"><table class="matrix" id="matrixWindow" data-shot="matrix"></table></div></div>
         <div><h3>Contract</h3><textarea id="contractText" rows="14" spellcheck="false" data-shot="contractText" aria-label="Contract JSON"></textarea><p class="error" id="contractError" aria-live="polite"></p><button id="approve" class="btn primary" type="button" data-shot="approve">Approve and replay</button></div>
@@ -104,7 +111,9 @@
 
   <section class="register" id="evidence">
     <div class="wrap">
-      <h2>Evidence</h2>
+      <p class="step-k">04</p>
+      <h2>Evidence, as the host recorded it</h2>
+      <p class="sub">The probe the model wrote, every syscall with its label, the transcripts, the compiled profile, the inference log, the bundle.</p>
       <div id="panels" hidden>
         <details id="probeDetails" data-shot="probe"><summary>Probe written by the model</summary><div id="probePanel"></div></details>
         <details id="straceDetails" data-shot="strace"><summary>Labelled strace events</summary><div id="stracePanel"></div></details>
@@ -121,12 +130,20 @@
 
   <section class="how" id="how">
     <div class="wrap">
+      <p class="step-k">05</p>
       <h2>How it works</h2>
       <ol class="steps">
         <li><b>Probe</b>Vultr Serverless Inference writes a short probe against a four-function harness. A syntax-tree validator accepts or rejects it. The probe is hashed and frozen.</li>
         <li><b>Discover</b>The probe runs in a fresh container whose only exit is our recording gateway. Host-side strace records what the tool touched. Planted canaries show the overreach.</li>
         <li><b>Replay</b>The model proposes a contract, a person approves, a compiler enforces it. The identical probe runs again. Same answer, credential reads refused by the kernel, no network.</li>
       </ol>
+    </div>
+  </section>
+
+  <section class="onvultr" id="vultr-section">
+    <div class="wrap">
+      <p class="step-k">06</p>
+      <h2 class="h2-tight">Running on Vultr</h2>
       <div class="vtiles" id="vultr">
         <div class="vtile"><div class="vtile-k">Live on Vultr Cloud Compute</div><div class="vtile-v" id="vmRegion">region pending</div><p class="vtile-s"><span id="vmInstance" class="mono">instance pending</span>. Orchestrator, every sandbox, the gateway and this page run on this VM.</p></div>
         <div class="vtile"><div class="vtile-k">Model calls on Vultr Serverless Inference</div><div class="vtile-v" id="infModel">model pending</div><p class="vtile-s"><span id="infCalls" class="mono">calls pending</span> in the run shown. No other provider anywhere in the code path.</p></div>
@@ -140,6 +157,7 @@
 
   <section class="team" id="team">
     <div class="wrap">
+      <p class="step-k">07</p>
       <h2>Who built it</h2>
       <div class="people">
         <div class="person"><img src="img/timotej.jpg" alt="Portrait of Timotej Cvikl" loading="lazy" width="210" height="262"><b>Timotej Cvikl</b><span>Computer science, University of Ljubljana. Accelerate Cambridge. Winner, Luminance challenge, Hack the Law 2026.</span></div>
