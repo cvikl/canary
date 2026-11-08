@@ -1,6 +1,6 @@
-/* Canary Cage. A documentary record that is also the live console. Paper ground, white panels, hairline rules,
+/* Canary Cage. A documentary record that is also the live console. Warm paper ground, white panels, hairline rules,
    IBM Plex (Sans Condensed for headlines, Sans for text, Mono for identifiers and labels). One red for what the
-   tool did that it should not have, one green for what the enforced replay kept. Nothing else carries colour. */
+   tool did that it should not have, one green for what the enforced replay kept. Amber marks caveats, blue is focus and links. */
 :root {
   --paper: #F5F4EF; --surface: #FFFFFF; --ink: #16181A; --ink-2: #4A4C48; --ink-3: #6B6D66;
   --rule: #D9D6CD; --rule-2: #E8E6DF;
