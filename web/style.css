@@ -317,3 +317,12 @@ pre { background: var(--wash); color: var(--ink); border: 1px solid var(--rule);
 @media (max-width: 640px) { .vkv > div { grid-template-columns: 1fr; gap: 2px; } }
 
 .console-shot { margin-top: 40px; }
+
+.foot-links { margin: 0 0 18px; }
+.foot-links a { color: var(--on-dark); text-decoration-color: var(--on-dark-2); }
+/* matrix, outside the job first */
+table.matrix tr.outside td { background: #FBEFEC; }
+table.matrix tr.outside td:nth-child(2) { color: var(--alert); font-weight: 500; }
+table.matrix tr.outside td:first-child { box-shadow: inset 4px 0 0 var(--alert); padding-left: 12px; }
+.jtag { display: inline-block; font: 600 10.5px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 4px 7px; border-radius: 3px; margin: 1px 6px 1px 0; vertical-align: middle; background: var(--rule-2); color: var(--ink-2); }
+.jtag.out { background: var(--alert); color: #fff; }

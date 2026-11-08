@@ -4,3 +4,6 @@ data/
 .local/
 *.log
 submission/video/*.mp4
+IMPLEMENTATION_PLAN.md
+PRODUCT.md
+.impeccable/
