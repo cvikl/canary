@@ -1,0 +1,13 @@
+# Caddy in front of the orchestrator. Replace __DOMAIN__ (publish.sh does it from CADDY_DOMAIN).
+__DOMAIN__ {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8080 {
+		flush_interval -1
+	}
+}
+
+:80 {
+	reverse_proxy 127.0.0.1:8080 {
+		flush_interval -1
+	}
+}
