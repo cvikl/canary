@@ -1,0 +1,23 @@
+{
+  "name": "canary-cage",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canary Cage for MCP. An agent that writes and runs behavioural probes against MCP tools inside isolated Vultr sandboxes, discovers what each tool actually touches, and replays the identical probe under a human-approved least-privilege contract.",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "workspaces": ["host", "harness", "fixture", "web"],
+  "scripts": {
+    "test": "CANARY_FAKE_LLM=1 node --test --test-concurrency=1 tests/*.test.ts",
+    "typecheck": "tsc -p host/tsconfig.json --noEmit",
+    "loop": "node host/src/cli.ts loop",
+    "dev": "node host/src/server.ts",
+    "start": "node host/src/server.ts",
+    "build:images": "node host/src/cli.ts build-images",
+    "fixture:digest": "node fixture/bin/digest.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.6.0"
+  }
+}
