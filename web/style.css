@@ -201,14 +201,14 @@ pre { background: #fff; border: 1px solid var(--line); padding: 12px 14px; borde
 @media (max-width: 760px) {
   .nav { padding: 0 20px; height: 64px; }
   .links { gap: 16px; font-size: 14px; } .links .outline { height: 36px; padding: 0 14px; }
-  .headline { position: relative; padding: 40px 20px 0; font-size: clamp(52px, 15.5vw, 88px); white-space: normal; }
+  .headline { position: relative; top: auto; left: auto; padding: 40px 20px 0; font-size: clamp(52px, 15.5vw, 88px); white-space: normal; }
   .slot { min-width: 0; }
-  .row { position: relative; padding: 28px 20px 0; flex-direction: column; align-items: flex-start; gap: 18px; }
+  .row { position: relative; top: auto; left: auto; padding: 28px 20px 0; flex-direction: column; align-items: flex-start; gap: 18px; }
   .cta { height: 48px; font-size: 16px; padding: 0 20px; }
   .caption { font-size: 16px; } .caption br { display: none; }
-  .panel { height: auto; min-height: 0; padding-bottom: 0; overflow: visible; }
+  .panel { height: auto; min-height: 0; padding-bottom: 0; overflow: hidden; }
   .caption { display: block; }
-  .strip { position: relative; height: auto; margin-top: 40px; padding: 0 0 8px; }
+  .strip { position: relative; bottom: auto; height: auto; margin-top: 40px; padding: 0 0 8px; }
   .notch { position: static; height: 40px; }
   .scroll-hint { display: none; }
   .strip-in { position: static; padding: 24px 20px 0; grid-template-columns: 1fr; gap: 20px; }
