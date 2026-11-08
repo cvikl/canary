@@ -67,9 +67,9 @@ button, select, textarea { font: inherit; color: inherit; }
 .stats-note:empty { display: none; }
 
 /* sections */
-main { padding: 40px 0 0; display: grid; gap: 28px; }
-main section { padding: 64px 0; border-top: 0; }
-main section .wrap { background: #fff; border-radius: 22px; padding: 56px 56px 60px; }
+main { padding: 24px 0 0; display: grid; gap: 16px; }
+main section { padding: 0; border-top: 0; }
+main section .wrap { background: #fff; border-radius: 18px; padding: 44px 48px 48px; }
 .h2-tight { margin-top: 0; }
 h2 { font-size: clamp(32px, 4vw, 48px); line-height: 1.05; letter-spacing: -.025em; font-weight: 500; margin-bottom: 20px; }
 h3 { font-size: 13px; font-weight: 500; color: var(--ink-56); margin-bottom: 12px; letter-spacing: .02em; text-transform: uppercase; }
@@ -236,4 +236,4 @@ pre { background: #fff; border: 1px solid var(--line); padding: 12px 14px; borde
 @media (max-width: 760px) { .vtiles { grid-template-columns: 1fr; gap: 24px; } }
 
 main section .console { background: var(--cream); border-color: transparent; }
-@media (max-width: 760px) { main section .wrap { padding: 28px 20px 32px; border-radius: 16px; } main { gap: 14px; } main section { padding: 20px 0; } }
+@media (max-width: 760px) { main section .wrap { padding: 24px 20px 28px; border-radius: 14px; } main { gap: 10px; } main section { padding: 0; } }
