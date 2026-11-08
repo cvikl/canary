@@ -27,10 +27,21 @@ function renderHero() {
   if (!run?.hero?.length) { $("hero").hidden = true; return; }
   $("hero").hidden = false;
   const heroKey = JSON.stringify(run.hero);
-  if ($("heroBody").dataset.key !== heroKey) { $("heroBody").dataset.key = heroKey; $("heroBody").innerHTML = run.hero.map((r) => `<tr class="${esc(r.state)}${/observed|attempted|exceeded/.test(r.discovery) && !/not observed/.test(r.discovery) ? " observed" : ""}"><td>${esc(r.discovery)}</td><td>${esc(r.replay)}</td></tr>`).join(""); }
+  if ($("heroBody").dataset.key !== heroKey) {
+    $("heroBody").dataset.key = heroKey;
+    $("heroBody").innerHTML = run.hero.map((r) => {
+      const bait = r.state === "denied" || /\.env read observed|SSH key read observed|Canary egress attempted/.test(r.discovery);
+      const exceeded = /Contract exceeded/.test(r.discovery);
+      const err = r.replay.match(/\b(E[A-Z]{3,})\b/);
+      const replayText = err ? r.replay.replace(/,?\s*\(?\b(E[A-Z]{3,})\b\)?/, "").replace(/, attempt refused$/, ", attempt refused") : r.replay;
+      const left = bait ? `<span class="rtag out">outside the job</span>${esc(r.discovery.replace("Canary egress attempted, caught at gateway with bait in body", "Tried to send both secrets out, caught at our gateway"))}` : esc(r.discovery);
+      const right = bait && r.state === "denied" ? `<span class="rtag blk">blocked</span>${esc(replayText)}${err ? `<span class="errno">${esc(err[1])}</span>` : ""}` : esc(r.replay);
+      return `<tr class="${esc(r.state)}${bait ? " bait" : ""}${exceeded ? " exceeded" : ""}"><td>${left}</td><td>${right}</td></tr>`;
+    }).join("");
+  }
   const fullStop = (t) => { const i = t.lastIndexOf("."); return i > 40 ? t.slice(0, i + 1) : t; };
-  $("explanation").innerHTML = run.explanation ? `${esc(fullStop(run.explanation.text))} <span class="badge${run.explanation.label === "FIXTURE" ? " warn" : ""}">explanation ${esc(run.explanation.label)}</span>` : "";
-  if (run.explanation && !$("explanation").dataset.bound) { $("explanation").dataset.bound = "1"; $("explanation").classList.add("clamped"); $("explanation").onclick = () => $("explanation").classList.toggle("clamped"); }
+  $("explanation").innerHTML = run.explanation ? `<b>Model's explanation.</b> ${esc(fullStop(run.explanation.text))} <span class="badge${run.explanation.label === "FIXTURE" ? " warn" : ""}">explanation ${esc(run.explanation.label)}</span>` : "";
+  $("explanation").classList.remove("clamped");
 }
 function renderIdentity() {
   const h = run?.hashes; if (!h?.probe) { $("identity").hidden = true; return; }
@@ -54,6 +65,8 @@ function renderContract() {
   if (!$("contractText").dataset.filled || $("contractText").dataset.run !== run.id) { $("contractText").value = current ? JSON.stringify(current, null, 2) : JSON.stringify({ tool: run.tool, allowed_read_paths: ["/workspace/repository/**"], allowed_write_paths: ["/output/**"], denied_paths: [], network_egress: "none", observed_process_contract: ["node"], max_runtime_seconds: 20, max_memory_mb: 256 }, null, 2); $("contractText").dataset.filled = "1"; $("contractText").dataset.run = run.id; }
   $("contractText").readOnly = !editable;
   $("approve").hidden = !editable;
+  $("approve").classList.toggle("nudge", editable && !cached);
+  $("approveTop").hidden = !(editable && !cached);
   $("contractError").textContent = run.contract.proposal_errors?.length ? "Proposal rejected by the schema, " + run.contract.proposal_errors.join("; ") + ". Edit the default below." : run.contract.approved ? `Approved by ${run.contract.approved_by}, ${new Date(run.contract.approved_at).toUTCString()}` : "";
   $("contractError").classList.toggle("note", !!run.contract.approved && !run.contract.proposal_errors?.length);
 }
@@ -140,7 +153,7 @@ function subscribe(id) {
   es.onmessage = async (m) => {
     const ev = JSON.parse(m.data);
     if (ev.type === "queue") $("status").textContent = ev.position > 0 ? `Queued, position ${ev.position}. One sandbox run at a time.` : "Your run is active.";
-    if (ev.type === "stage") { $("status").textContent = `${ev.status}, ${ev.detail}`; await refresh(); if (ev.status === "complete" || ev.status === "failed") { es.close(); $("run").disabled = false; } }
+    if (ev.type === "stage") { $("status").textContent = ev.status === "awaiting_approval" ? "Step 5 of 7. The model proposed a contract. Your turn: review it and approve to run the enforced replay." : `${ev.status}, ${ev.detail}`; await refresh(); if (ev.status === "complete" || ev.status === "failed") { es.close(); $("run").disabled = false; } }
     if (ev.type === "probe_attempt") $("status").textContent = `probe attempt ${ev.n}, ${ev.ok ? "accepted by the validator" : "rejected, " + ev.violations.join("; ")}`;
     if (ev.type === "tracer") $("status").textContent = `Run ${ev.run}, tracer ${ev.attached ? "attached" : "not attached"}`;
     if (ev.type === "snapshot") { await refresh(); }
@@ -156,10 +169,11 @@ $("run").onclick = async () => {
     subscribe(r.id);
   } catch (e) { $("status").textContent = `Could not start, ${e.message}.` + (e.body?.cached_available ? " A pre-recorded run is available below, labelled cached." : ""); $("run").disabled = false; if (e.body?.cached_available) $("showCached").hidden = false; }
 };
+$("approveTop").onclick = () => { const card = $("contractCard"); card.scrollIntoView({ behavior: "smooth", block: "start" }); card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash"); setTimeout(() => $("approve").focus({ preventScroll: true }), 900); };
 $("approve").onclick = async () => {
   let contract; try { contract = JSON.parse($("contractText").value); } catch (e) { $("contractError").textContent = "Not valid JSON, " + e.message; return; }
   $("approve").disabled = true;
-  try { await api(`/api/runs/${run.id}/approve`, { method: "POST", body: JSON.stringify({ contract, approved_by: "reviewer in browser" }) }); $("status").textContent = "Approved. Compiling and replaying."; subscribe(run.id); }
+  try { await api(`/api/runs/${run.id}/approve`, { method: "POST", body: JSON.stringify({ contract, approved_by: "reviewer in browser" }) }); $("status").textContent = "Approved. Compiling the profile and replaying the identical probe."; $("approveTop").hidden = true; $("approve").classList.remove("nudge"); window.scrollTo({ top: 0, behavior: "smooth" }); subscribe(run.id); }
   catch (e) { $("contractError").textContent = e.message; }
   $("approve").disabled = false;
 };

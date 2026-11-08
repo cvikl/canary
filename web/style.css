@@ -280,3 +280,26 @@ pre { background: var(--wash); color: var(--ink); border: 1px solid var(--rule);
 .vultr-grid { display: grid; grid-template-columns: minmax(300px, 5fr) minmax(0, 7fr); gap: 48px; align-items: center; margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--rule); }
 .vultr-grid .vultr { margin: 0; padding: 0; border: 0; }
 @media (max-width: 1000px) { .problem-grid, .charts, .vultr-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+/* nudges */
+@keyframes nudge { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,193,78,.0); } 50% { box-shadow: 0 0 0 10px rgba(242,193,78,.35); } }
+.btn.nudge { background: var(--canary); border-color: var(--canary); color: var(--ink); font-weight: 600; animation: nudge 1.6s ease-in-out infinite; justify-self: start; }
+.btn.nudge:hover { background: #E8B53A; border-color: #E8B53A; }
+#approve.nudge { animation: nudge 1.6s ease-in-out infinite; }
+.contract.flash { animation: flash 1.2s var(--ease) 1; }
+@keyframes flash { 0% { background: #FFF8E4; } 100% { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .btn.nudge, #approve.nudge { animation: none; } }
+
+/* hero table, bait rows */
+.hero-table tr.bait td { background: #FBEFEC; }
+.hero-table tr.bait td:first-child { color: var(--alert); font-weight: 500; box-shadow: inset 4px 0 0 var(--alert); padding-left: 16px; }
+.hero-table tr.bait td:last-child { background: var(--green-bg); }
+.hero-table tr.exceeded td:first-child { color: var(--alert); font-weight: 500; }
+.rtag { display: inline-block; font: 600 11px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 4px 7px; border-radius: 3px; margin-right: 10px; vertical-align: middle; }
+.rtag.out { background: var(--alert); color: #fff; }
+.rtag.blk { background: var(--green); color: #fff; }
+.errno { display: inline-block; font: 500 12.5px/1 var(--mono); border: 1px solid var(--ink); color: var(--ink); padding: 4px 7px; border-radius: 3px; margin-left: 10px; vertical-align: middle; background: #fff; }
+.explanation { padding: 16px 18px; margin-top: 16px; background: var(--wash); border-radius: 6px; font-size: 15px; color: var(--ink-2); line-height: 1.6; max-width: none; }
+.explanation b { color: var(--ink); font-weight: 600; }
+.explanation.clamped { display: block; -webkit-line-clamp: unset; overflow: visible; cursor: default; }
+.explanation.clamped::after { content: ""; }

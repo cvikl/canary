@@ -21,8 +21,8 @@
       <span>Canary Cage <em>for MCP</em></span>
     </a>
     <nav class="topnav" aria-label="Page">
-      <a href="#problem">Problem</a>
       <a href="#record">Record</a>
+      <a href="#problem">Problem</a>
       <a href="#how">How it works</a>
       <a href="#team">Team</a>
       <a href="#limits">Limits</a>
@@ -65,6 +65,7 @@
         </div>
         <p class="status" id="status" data-shot="status" aria-live="polite">Idle. One sandbox run at a time; a second visitor sees a queue position.</p>
         <div class="badges" id="badges" data-shot="badges"></div>
+        <button id="approveTop" class="btn nudge" type="button" hidden>Your turn. Review and approve the contract ↓</button>
       </form>
     </div>
     <div class="wrap">
@@ -77,6 +78,44 @@
         <li data-stage="compiling"><b>Enforce</b><span>compiled profile</span></li>
         <li data-stage="replaying"><b>Replay</b><span>run C, same probe</span></li>
       </ol>
+    </div>
+  </section>
+
+  <section class="record" id="record">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>The record</h2>
+        <p class="sub">What the tool did in discovery, and what the same probe did under the approved contract.</p>
+      </div>
+      <div class="identity" id="identity" hidden data-shot="identity">
+        <details>
+          <summary><span id="identityLabel" class="idlabel">Replay identity</span><span class="hint">four hashes</span></summary>
+          <table class="kv" id="hashes"></table>
+        </details>
+        <p class="contract-hash" id="contractHash"></p>
+      </div>
+      <div class="hero-table" id="hero" hidden data-shot="hero">
+        <table>
+          <thead><tr><th>Discovery, run B</th><th>Enforced replay, run C</th></tr></thead>
+          <tbody id="heroBody"></tbody>
+        </table>
+        <p class="explanation" id="explanation" data-shot="explanation"></p>
+      </div>
+      <dl class="stats" id="stats" data-shot="stats" aria-label="Numbers from the run">
+        <div><dt>syscalls traced in discovery</dt><dd id="statSyscalls" class="pending">pending</dd></div>
+        <div><dt>caught at the gateway</dt><dd id="statGateway" class="pending">pending</dd></div>
+        <div><dt>Vultr inference calls</dt><dd id="statCalls" class="pending">pending</dd></div>
+        <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds" class="pending">pending</dd></div>
+        <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
+        <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
+      </dl>
+      <p class="stats-note" id="statsNote"></p>
+      <figure class="chart" id="timeline" hidden data-shot="timeline">
+        <figcaption><b>Syscalls over time, host-side strace.</b> One lane per run. The band is the tool-call window, from the request leaving the probe to the result arriving. Tall marks are reads, connects and execs outside the platform; short grey marks are runtime noise; hollow marks were refused by the kernel. Hover a mark for the syscall.</figcaption>
+        <div id="timelineSvg" class="chart-svg"></div>
+        <p class="chart-legend"><span class="lg tall"></span>tool-attributed event <span class="lg short"></span>platform noise <span class="lg hollow"></span>refused by the kernel <span class="lg band"></span>tool-call window</p>
+        <details class="chart-table"><summary>Table view</summary><div id="timelineTable"></div></details>
+      </figure>
     </div>
   </section>
 
@@ -119,44 +158,6 @@
           <p class="source">Source. <a href="https://phoenix.security/accelerating-supply-chain-attacks-npm-pypi-vsx-ai-enabled-2026/" rel="noopener">Phoenix Security supply-chain tracker, June 2026</a>. 14 of 59 campaigns since 2025 were delivered through agent tooling.</p>
         </figure>
       </div>
-    </div>
-  </section>
-
-  <section class="record" id="record">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>The record</h2>
-        <p class="sub">What the tool did in discovery, and what the same probe did under the approved contract.</p>
-      </div>
-      <div class="identity" id="identity" hidden data-shot="identity">
-        <details>
-          <summary><span id="identityLabel" class="idlabel">Replay identity</span><span class="hint">four hashes</span></summary>
-          <table class="kv" id="hashes"></table>
-        </details>
-        <p class="contract-hash" id="contractHash"></p>
-      </div>
-      <div class="hero-table" id="hero" hidden data-shot="hero">
-        <table>
-          <thead><tr><th>Discovery, run B</th><th>Enforced replay, run C</th></tr></thead>
-          <tbody id="heroBody"></tbody>
-        </table>
-        <p class="explanation" id="explanation" data-shot="explanation"></p>
-      </div>
-      <dl class="stats" id="stats" data-shot="stats" aria-label="Numbers from the run">
-        <div><dt>syscalls traced in discovery</dt><dd id="statSyscalls" class="pending">pending</dd></div>
-        <div><dt>caught at the gateway</dt><dd id="statGateway" class="pending">pending</dd></div>
-        <div><dt>Vultr inference calls</dt><dd id="statCalls" class="pending">pending</dd></div>
-        <div><dt>seconds, inspect to bundle</dt><dd id="statSeconds" class="pending">pending</dd></div>
-        <div><dt>containers created and destroyed</dt><dd id="statContainers" class="pending">pending</dd></div>
-        <div><dt>denied by the kernel in replay</dt><dd id="statDenied" class="pending">pending</dd></div>
-      </dl>
-      <p class="stats-note" id="statsNote"></p>
-      <figure class="chart" id="timeline" hidden data-shot="timeline">
-        <figcaption><b>Syscalls over time, host-side strace.</b> One lane per run. The band is the tool-call window, from the request leaving the probe to the result arriving. Tall marks are reads, connects and execs outside the platform; short grey marks are runtime noise; hollow marks were refused by the kernel. Hover a mark for the syscall.</figcaption>
-        <div id="timelineSvg" class="chart-svg"></div>
-        <p class="chart-legend"><span class="lg tall"></span>tool-attributed event <span class="lg short"></span>platform noise <span class="lg hollow"></span>refused by the kernel <span class="lg band"></span>tool-call window</p>
-        <details class="chart-table"><summary>Table view</summary><div id="timelineTable"></div></details>
-      </figure>
     </div>
   </section>
 
