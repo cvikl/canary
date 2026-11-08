@@ -246,13 +246,17 @@ export async function approveAndReplay(run: RunRecord, contractInput: unknown, a
     // Explain (model writes prose beside the structured verdict, cannot change a label)
     stage(run, emit, "explaining", "plain-language explanation beside the structured verdict");
     const verdict = { discovery_labels: run.discovery_labels, replay_labels: run.replay_labels, denied: run.denied_errors, comparison: run.comparison.note, replay_identity_verified: run.hashes.replay_identity_verified, gateway_discovery: gatewaySummary(run.runs.B!, run.canary_host, run.id).lines };
+    const deterministic = `Discovery labels. ${run.discovery_labels.join("; ") || "none"}. Replay labels. ${run.replay_labels.join("; ") || "none"}. ${run.denied_errors.filter((d) => d.errno).map((d) => `${d.path} ${d.errno}`).join(", ") || "Nothing denied"}. Output comparison, ${run.comparison.note}. Replay identity ${run.hashes.replay_identity_verified ? "verified" : "not verified"}.`;
     try {
-      const { text, entry } = await chat([
-        { role: "system", content: "You explain a Canary Cage result to a security reviewer in at most 120 words of plain English. Use only the words observed, newly observed during the tool-call window, denied by the operating system, caught at our gateway, useful output preserved under enforcement. Never say safe, malicious, guaranteed, complete visibility or secured. Do not add or remove any finding. No markdown." },
-        { role: "user", content: JSON.stringify(verdict) },
-      ], { purpose: "explain verdict", temperature: 0, maxTokens: 2500 });
-      run.inference_ledger.push(entry); run.explanation = { text: text.trim(), label: entry.label };
-    } catch (e) { run.explanation = { text: `explanation unavailable: ${(e as Error).message}`, label: "live" }; }
+      const system = "You explain a Canary Cage result to a security reviewer in at most 120 words of plain English. Use only the words observed, newly observed during the tool-call window, denied by the operating system, caught at our gateway, useful output preserved under enforcement. Never say safe, malicious, guaranteed, complete visibility or secured. Do not add or remove any finding. No markdown. Answer with the prose only, no reasoning.";
+      let { text, entry } = await chat([{ role: "system", content: system }, { role: "user", content: JSON.stringify(verdict) }], { purpose: "explain verdict", temperature: 0, maxTokens: 2500 });
+      run.inference_ledger.push(entry);
+      if (!text.trim()) {
+        const retry = await chat([{ role: "system", content: system }, { role: "user", content: JSON.stringify(verdict) + "\n\nWrite the explanation now, prose only." }], { purpose: "explain verdict retry", temperature: 0, maxTokens: 2500 });
+        run.inference_ledger.push(retry.entry); text = retry.text; entry = retry.entry;
+      }
+      run.explanation = text.trim() ? { text: text.trim(), label: entry.label } : { text: deterministic + " (model explanation empty, this sentence is deterministic)", label: entry.label };
+    } catch (e) { run.explanation = { text: deterministic + ` (model explanation unavailable, ${(e as Error).message})`, label: "live" }; }
 
     // Bundle
     stage(run, emit, "bundling", "zipping probe, transcripts, labelled events, gateway log, profile, contract, hashes, ledger");
